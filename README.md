@@ -1,30 +1,34 @@
-# larzy — Portfolio
+# Larzy — YouTube Thumbnail Designer Portfolio
 
-Quick steps to publish to GitHub:
+This repository contains the static site I designed to market my custom YouTube thumbnails. The site highlights my process, showcases recent client work, and gives creators a clear way to book new thumbnail packages.
 
-1. Initialize and commit locally
-   ```
-   cd c:\Users\rk\Desktop\portfolio
-   git init
-   git add .
-   git commit -m "Initial site"
-   ```
+## What you'll find
+- `index.html` — landing page with hero copy, service overview, and CTA buttons for YouTube creators.
+- `portfolio.html` — grid of recent thumbnail concepts organized by creator niche.
+- `about.html` — background on my graphic design approach and toolset.
+- `contact.html` — form for collaboration requests plus direct contact info.
+- `clients.json` — sample testimonials/metrics used to power the "clients" carousel via `script.js`.
+- `styles.css` + `assets/` — custom branding, typography, and optimized thumbnail previews.
 
-2. Create a GitHub repo (via github.com/new) and add remote:
-   ```
-   git remote add origin https://github.com/USERNAME/REPO.git
-   git branch -M main
-   git push -u origin main
-   ```
+Everything runs on plain HTML, CSS, and a small amount of vanilla JavaScript, so it can be hosted anywhere without a build step.
 
-3. Option A — Simple:
-   - Go to the repo Settings → Pages → Source and choose "main branch / (root)" or "gh-pages" if you push there.
+## Updating content
+1. Add or replace thumbnails in `assets/` and update their references in `portfolio.html`.
+2. Refresh testimonials or stats by editing `clients.json` (the script hotloads the latest data on page load).
+3. Tweak copy in `about.html` or `index.html` to reflect new services or pricing.
+4. Keep contact details current in `contact.html` so creators can reach me quickly.
 
-4. Option B — Automated (recommended):
-   - Add the workflow file (.github/workflows/deploy.yml) and push to main.
-   - The GitHub Action will publish the repo root to the `gh-pages` branch automatically.
-   - After first successful run, enable Pages to serve from `gh-pages` branch (or let Actions set it).
+## Preview locally
+```bash
+cd /path/to/portfolio
+open index.html        # macOS
+# or
+xdg-open index.html    # Linux
+start index.html       # Windows
+```
 
-Notes:
-- If you prefer the site under a custom domain, add a CNAME file and configure DNS.
-- For CI that builds (e.g. a static site generator) adjust the workflow to run the build step and set `publish_dir` to the build output.
+## Deploying
+Push the repo to GitHub (or any static host), enable GitHub Pages for the `main` branch, and the live site updates immediately. No build tools, frameworks, or server dependencies required.
+
+## Work with me
+If you need scroll-stopping thumbnails for your channel, reach out via the contact form or email listed on `contact.html`. I'm always open to new collaborations with creators who want higher CTRs and consistent channel branding.
