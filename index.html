@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="assets/palette.svg" type="image/svg+xml" />
+    <title>Larzy - Minecraft Thumbnails</title>
+    <meta name="description" content="Minecraft Thumbnail Artist — High-impact, click-worthy designs by larzy." />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      body{font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;}
+      /* Remove white box behind the logo and ensure the SVG displays cleanly */
+      .logo { display:flex; align-items:center; gap:0.4rem; }
+      .logo .logo-mark,
+      .logo img.logo-mark {
+        background: transparent !important;
+        background-color: transparent !important;
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        display: inline-block;
+        width: 24px; /* scaled down a bit */
+        height: auto;
+        max-width:100%;
+        vertical-align: middle;
+      }
+      /* If the original stylesheet sets a background on the parent, ensure transparency */
+      .nav .logo { background: transparent !important; }
+    </style>
+  </head>
+  <body>
+    <!-- Nav -->
+    <nav class="nav" aria-label="Primary">
+      <div class="logo">
+        <img class="logo-mark" src="assets/palette.svg" alt="larzy logo" aria-hidden="true" />
+        <span>larzy</span>
+      </div>
+      <div class="nav-links">
+        <a href="#work">Work</a>
+        <a href="#reviews">Reviews</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero section" id="home">
+      <div class="container hero-grid">
+        <div>
+          <span class="tag reveal">Minecraft Thumbnail Artist</span>
+          <h1 class="reveal"> <span class="gradient-text">Thumbnails</span><br/> That Attract Viewers</h1>
+          <p class="reveal">Hey, I'm larzy, a Minecraft Thumbnail designer with over 2 years of experience in the field. Each thumbnail I create is directed towards your audience to ensure maximum clicks.</p>
+          <div class="hero-actions reveal">
+            <a class="btn primary" href="#work">View Work</a>
+            <a class="btn" href="#contact">Commission Now</a>
+          </div>
+        </div>
+        <div class="hero-visual reveal tilt-card">
+          <div class="shine"></div>
+          <img alt="Featured thumbnail" class="thumb" src="assets/pfp.png" decoding="async" />
+        </div>
+      </div>
+    </header>
+
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <div class="marquee-item">Thumbnails</div>
+        <div class="marquee-item">Minecraft</div>
+        <div class="marquee-item">YouTube</div>
+        <div class="marquee-item">Eye‑Catching</div>
+        <div class="marquee-item">Fast Turnaround</div>
+        <div class="marquee-item">High CTR</div>
+        <div class="marquee-item">Thumbnails</div>
+        <div class="marquee-item">Minecraft</div>
+        <div class="marquee-item">YouTube</div>
+        <div class="marquee-item">Eye‑Catching</div>
+        <div class="marquee-item">Fast Turnaround</div>
+        <div class="marquee-item">High CTR</div>
+      </div>
+    </div>
+
+    <!-- Work -->
+    <section class="section" id="work">
+      <div class="container">
+        <span class="tag reveal">Portfolio</span>
+        <h2 class="reveal">Recent Minecraft Thumbnails</h2>
+        <div class="grid" id="work-grid">
+          <article class="card tilt-card reveal" data-parallax="0.25">
+            <img class="thumb" src="assets/thumbnails/VivillyPoppy.png" alt="Minecraft thumbnail 1"/>
+            <div class="shine"></div>
+            <span class="label">@Vivilly</span>
+          </article>
+          <article class="card tilt-card reveal" data-parallax="0.12">
+            <img class="thumb" src="assets/thumbnails/mylespractice.png" alt="Minecraft thumbnail 2"/>
+            <div class="shine"></div>
+            <span class="label">Practice</span>
+          </article>
+          <article class="card tilt-card reveal" data-parallax="0.16">
+            <img class="thumb" src="assets/thumbnails/wisp.png" alt="Minecraft thumbnail 3"/>
+            <div class="shine"></div>
+            <span class="label">@Wisp</span>
+          </article>
+          <article class="card tilt-card reveal" data-parallax="0.18">
+            <img class="thumb" src="assets/thumbnails/llama.png" alt="Minecraft thumbnail 4"/>
+            <div class="shine"></div>
+            <span class="label">@Llama and Sticks</span>
+          </article>
+          <article class="card tilt-card reveal" data-parallax="0.22">
+            <img class="thumb" src="assets/thumbnails/gold.png" alt="Minecraft thumbnail 5"/>
+            <div class="shine"></div>
+            <span class="label">@GoldActual</span>
+          </article>
+          <article class="card tilt-card reveal" data-parallax="0.14">
+            <img class="thumb" src="assets/thumbnails/vivillysmiler.png" alt="Minecraft thumbnail 6"/>
+            <div class="shine"></div>
+            <span class="label">@Vivilly</span>
+          </article>
+          <!-- Added: two more rows (6 more cards) -->
+          <article class="card tilt-card reveal" data-parallax="0.20">
+            <img class="thumb" src="assets/thumbnails/Tears.png" alt="Minecraft thumbnail 7"/>
+            <div class="shine"></div>
+            <span class="label">@Tears</span>
+          </article>
+          <article class="card tilt-card reveal" data-parallax="0.12">
+            <img class="thumb" src="assets/thumbnails/dinosaur.png" alt="Minecraft thumbnail 8"/>
+            <div class="shine"></div>
+            <span class="label">@Vivilly</span>
+          </article>
+          <article class="card tilt-card reveal" data-parallax="0.16">
+            <img class="thumb" src="assets/thumbnails/jamsteo.png" alt="Minecraft thumbnail 9"/>
+            <div class="shine"></div>
+            <span class="label">@Jamsteo</span>
+          </article>
+          <article class="card tilt-card reveal" data-parallax="0.18">
+            <img class="thumb" src="assets/thumbnails/Lynix 67 Night.png" alt="Minecraft thumbnail 10"/>
+            <div class="shine"></div>
+            <span class="label">@Lynix</span>
+          </article>
+          <article class="card tilt-card reveal" data-parallax="0.22">
+            <img class="thumb" src="assets/thumbnails/snipers tn1.png" alt="Minecraft thumbnail 11"/>
+            <div class="shine"></div>
+            <span class="label">@SnipersVoid</span>
+          </article>
+          <article class="card tilt-card reveal" data-parallax="0.14">
+            <img class="thumb" src="assets/thumbnails/freshi.png" alt="Minecraft thumbnail 12"/>
+            <div class="shine"></div>
+            <span class="label">@Freshi</span>
+          </article>
+          <article class="card tilt-card reveal" data-parallax="0.20">
+            <img class="thumb" src="assets/thumbnails/vivillypalpers.png" alt="Minecraft thumbnail 13"/>
+            <div class="shine"></div>
+            <span class="label">@Vivilly</span>
+          </article>
+          <article class="card tilt-card reveal" data-parallax="0.12">
+            <img class="thumb" src="assets/thumbnails/blocky.png" alt="Minecraft thumbnail 14"/>
+            <div class="shine"></div>
+            <span class="label">@Blocky</span>
+          </article>
+          <article class="card tilt-card reveal" data-parallax="0.16">
+            <img class="thumb" src="assets/thumbnails/AStrangeCreature.png" alt="Minecraft thumbnail 15"/>
+            <div class="shine"></div>
+            <span class="label">@AStrangeCreature</span>
+          </article>
+          <article class="card tilt-card reveal" data-parallax="0.18">
+            <img class="thumb" src="assets/thumbnails/jamsteo 2nd v2thumbnail.png" alt="Minecraft thumbnail 16"/>
+            <div class="shine"></div>
+            <span class="label">@Jamsteo</span>
+          </article>
+          <article class="card tilt-card reveal" data-parallax="0.22">
+            <img class="thumb" src="assets/thumbnails/freshi3.png" alt="Minecraft thumbnail 17"/>
+            <div class="shine"></div>
+            <span class="label">@Freshi</span>
+          </article>
+          <article class="card tilt-card reveal" data-parallax="0.14">
+            <img class="thumb" src="assets/thumbnails/vivilly robot tn v2.png" alt="Minecraft thumbnail 18"/>
+            <div class="shine"></div>
+            <span class="label">@Vivilly</span>
+          </article>
+        </div>
+        <div class="work-actions reveal">
+          <button class="btn primary" id="show-more" type="button" aria-controls="work-grid" aria-expanded="false">Show More</button>
+        </div>
+      </div>
+    </section>
+
+    
+
+    <!-- Clients -->
+    <section class="section" id="clients">
+      <div class="container">
+        <span class="tag">Clients</span>
+        <h2>Worked With</h2>
+        <div class="clients" data-source="clients.json"></div>
+        <!-- Inline fallback data for local viewing (optional) -->
+        <script id="clients-data" type="application/json">[
+          { "handle": "@BlockMan",   "subs": "1.2M subscribers", "avatar": "https://placehold.co/96x96/png", "platform": "youtube" },
+          { "handle": "@SkyMason",   "subs": "860k subscribers",  "avatar": "https://placehold.co/96x96/png", "platform": "youtube" },
+          { "handle": "@RedstoneFox", "subs": "420k subscribers",  "avatar": "https://placehold.co/96x96/png", "platform": "youtube" },
+          { "handle": "@PvPPro",     "subs": "310k subscribers",  "avatar": "https://placehold.co/96x96/png", "platform": "youtube" }
+        ]</script>
+      </div>
+    </section>
+
+    <!-- Reviews -->
+    <section class="section" id="reviews">
+      <div class="container">
+        <span class="tag reveal">Reviews</span>
+        <h2 class="reveal">What Clients Say</h2>
+        <div class="reviews-slider reveal">
+          <div class="reviews-viewport">
+            <div class="reviews-track" id="reviews-track">
+              <article class="review-card">
+                <div class="review-header">
+                  <img class="avatar" src="assets/youtube/vixios.png" alt="@NotVixios"/>
+                  <div>
+                    <div class="name">@NotVixios</div>
+                    <div class="muted">2.0M subs</div>
+                  </div>
+                </div>
+                <p class="quote">“Clean and fast thumbnails!”</p>
+              </article>
+              <article class="review-card">
+                <div class="review-header">
+                  <img class="avatar" src="assets/reviews/kbashed.jpg" alt="@Kbashed"/>
+                  <div>
+                    <div class="name">@Kbashed</div>
+                    <div class="muted">Designer</div>
+                  </div>  
+                </div>
+                <p class="quote">“Larzy is one of the most talented designers I've had the pleasure of talking to. Not only from the beautiful design aspect but also his consideration for what makes a great idea and what sets apart a 1000 Views Thumbnail From a 1M Views Thumbnail.”</p>
+              </article>
+              <article class="review-card">
+                <div class="review-header">
+                  <img class="avatar" src="assets/youtube/freshi.png" alt="@Freshi"/>
+                  <div>
+                    <div class="name">@Freshi</div>
+                    <div class="muted">17.4k subs</div>
+                  </div>
+                </div>
+                <p class="quote">"Larzy is one of the most talented thumbnail designers mate, he never misses truly the goat"</p>
+              </article>
+              <article class="review-card">
+                <div class="review-header">
+                  <img class="avatar" src="assets/youtube/jamsteo.png" alt="@Jamsteo"/>
+                  <div>
+                    <div class="name">@Jamsteo</div>
+                    <div class="muted">126k subs</div>
+                  </div>
+                </div>
+                <p class="quote">"You're genuinely one of the BEST thumbnail designers I know no glaze, The thumbnails I commission from you are always tuff and get me more clicks as well so that helps. Most thumbnail designers just don't make what they were asked to but you actually work with your clients and actually deliver to make the thumbnail look better."</p>
+              </article>
+              <article class="review-card">
+                <div class="review-header">
+                  <img class="avatar" src="assets/youtube/vivilly.png" alt="@Vivilly"/>
+                  <div>
+                    <div class="name">@Vivilly</div>
+                    <div class="muted">1.5M subs</div>
+                  </div>
+                </div>
+                <p class="quote">"Larzy is amazing! Has a lot of experience and puts 100% in each and every project!"</p>
+              </article>
+              <article class="review-card">
+                <div class="review-header">
+                  <img class="avatar" src="assets/reviews/arik.jpg" alt="@ArikDZN"/>
+                  <div>
+                    <div class="name">@ArikDZN</div>
+                    <div class="muted">3D Artist</div>
+                  </div>
+                </div>
+                <p class="quote">"As a 3D artist myself, I can confidently say Larzy’s work is incredible. His composition, color sense, and deep understanding of the YouTube algorithm truly fascinate me. Every time I revisit his portfolio, I’m amazed by how he continues to push his already stunning art even further. I’ve seen videos with his thumbnails consistently perform best — it’s a mystery why more people don’t commission him."</p>
+              </article>
+              <article class="review-card">
+                <div class="review-header">
+                  <img class="avatar" src="assets/reviews/nothv2_pfp.png" alt="@NothFX"/>
+                  <div>
+                    <div class="name">@NothFX</div>
+                    <div class="muted">Video Editor</div>
+                  </div>
+                </div>
+                <p class="quote">"Such a lovely person to work with. Thumbnails are up to par and I would definitely recommend him to anyone!"</p>
+              </article>
+            </div>
+          </div>
+          <div class="reviews-nav">
+            <button class="reviews-btn" id="reviews-prev" aria-label="Previous review" title="Previous">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <button class="reviews-btn" id="reviews-next" aria-label="Next review" title="Next">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact / Commission -->
+    <section class="section" id="contact">
+      <div class="container">
+        <span class="tag reveal">Contact</span>
+        <h2 class="reveal">Let’s make your next video stand out!</h2>
+        <div class="contact">
+          <div class="panel reveal">
+            <h3>Commission</h3>
+            <p class="muted">Reach out with your video concept, deadline, and any references. I’ll be sure to respond ASAP and get the project started!</p>
+            <div class="cta">
+              <button class="btn icon" id="copy-discord" type="button">
+                <img src="assets/icons/discord.svg" alt="Discord"/> Copy Discord
+              </button>
+              <a class="btn icon" href="https://x.com/larzyfx" target="_blank" rel="noopener">
+                <img src="assets/icons/x.png" alt="X"/> Twitter
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="container">© <span id="year"></span> larzy</div>
+    </footer>
+
+    <!-- GSAP + ScrollTrigger -->
+    <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
+    <script src="https://unpkg.com/gsap@3/dist/ScrollTrigger.min.js"></script>
+    <script>
+      if (window.gsap && window.ScrollTrigger) { gsap.registerPlugin(ScrollTrigger); }
+      document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+    <script src="script.js"></script>
+  </body>
+</html>

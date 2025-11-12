@@ -1,0 +1,6 @@
+*** Begin Patch
+*** Update File: styles.css
+@@
+-.shine { position:absolute; inset:0; background: radial-gradient(400px 200px at var(--mx,50%) var(--my,50%), rgba(255,255,255,0.12), transparent 40%); opacity: 0; transition: opacity .2s ease; }
++.shine { position:absolute; inset:0; background: radial-gradient(400px 200px at var(--mx,50%) var(--my,50%), rgba(255,255,255,0.12), transparent 40%); opacity: 0; transition: opacity .2s ease; pointer-events: none; }
+*** End Patch

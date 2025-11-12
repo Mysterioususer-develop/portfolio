@@ -1,0 +1,21 @@
+[
+  { "handle": "@Wisp",       "subs": "5.6M Subs",  "avatar": "assets/youtube/wisp.png" },
+  { "handle": "@NotVixios",  "subs": "2.2M Subs", "avatar": "assets/youtube/vixios.png" },
+  { "handle": "@Flayming",   "subs": "1.76M Subs","avatar": "assets/youtube/flayming.png" },
+  { "handle": "@Vivilly",    "subs": "1.5M Subs", "avatar": "assets/youtube/vivilly.png" },
+
+  { "handle": "@Lynix",   "subs": "1.5M Subs", "avatar": "assets/youtube/lynix.png" },
+  { "handle": "@lolFrosty",   "subs": "1.2M Subs", "avatar": "assets/youtube/frosty.png" },
+  { "handle": "@ThatChiefGuy","subs": "650K Subs", "avatar": "assets/youtube/chiefguy.png" },
+  { "handle": "@Baablu",     "subs": "500k Subs", "avatar": "assets/youtube/baablu.png" },
+
+  { "handle": "@GoldActual",     "subs": "350K Subs", "avatar": "assets/youtube/goldactual.png" },
+  { "handle": "@TrainerDario","subs": "300K Subs", "avatar": "assets/youtube/trainerdario.png" },
+  { "handle": "@Jamsteo", "subs": "126K Subs", "avatar": "assets/youtube/jamsteo.png" },
+  { "handle": "@Yuruze","subs": "100K Subs", "avatar": "assets/youtube/yuruze.png" },
+
+  { "handle": "@RiceFarmer11", "subs": "100k Subs",  "avatar": "assets/youtube/ricefarmer.png" },
+  { "handle": "@Jooonah",  "subs": "100K Subs",  "avatar": "assets/youtube/jooonah.png" },
+  { "handle": "@Dewier", "subs": "100K Subs",  "avatar": "assets/youtube/dewier.png" },
+  { "handle": "@TheLaSteve", "subs": "50K Subs",  "avatar": "assets/youtube/thelasteve.png" }
+]

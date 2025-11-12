@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Contact — larzy</title>
+    <meta name="description" content="Contact larzy for Minecraft thumbnails." />
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="script.js"></script>
+  </head>
+  <body data-page="contact">
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="index.html" aria-label="Home">larzy</a>
+        <nav class="main-nav" aria-label="Primary">
+          <a class="nav-link" href="index.html">Home</a>
+          <a class="nav-link" href="portfolio.html">Portfolio</a>
+          <a class="nav-link" href="about.html">About</a>
+          <a class="nav-link is-active" href="contact.html">Contact</a>
+        </nav>
+        <div class="actions">
+          <a class="btn icon-btn" href="https://x.com/larzyfx" target="_blank" rel="noopener noreferrer" aria-label="Open X profile">
+            <img src="assets/icons/x.png" alt="X" width="18" height="18" />
+            <span class="btn-label">X</span>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="section">
+        <div class="container">
+          <span class="tag reveal">Contact</span>
+          <h1 class="reveal">Start A Project</h1>
+          <p class="muted reveal">Fast responses, clear communication, and thumbnails that get clicked. Reach out on Discord or drop a quick brief and I’ll get back to you.</p>
+
+          <div class="contact-grid">
+            <!-- Contact Methods -->
+            <div class="panel reveal">
+              <h3>Quick Contact</h3>
+              <p class="muted">Best way to reach me is Discord. I usually reply within 12 hours.</p>
+              <div class="contact-actions">
+                <button id="copy-discord" class="btn icon" type="button">
+                  <img src="assets/icons/discord.svg" alt="Discord" />
+                  Copy Discord: <strong>larzyfx</strong>
+                </button>
+                <a class="btn icon" href="https://x.com/larzyfx" target="_blank" rel="noopener noreferrer">
+                  <img src="assets/icons/x.png" alt="X" />
+                  DM on X Twitter
+                </a>
+              </div>
+              <ul class="meta">
+                <li><strong>Availability:</strong> Open for commissions</li>
+                <li><strong>Turnaround:</strong> Typically 24–72 hours</li>
+                <li><strong>Revisions:</strong> Included until it’s right</li>
+              </ul>
+            </div>
+
+            <!-- Project Brief Form -->
+            <div class="panel reveal">
+              <h3>Project Brief</h3>
+              <form id="brief-form" class="form-grid">
+                <div class="field">
+                  <label for="name">Your Name</label>
+                  <input id="name" name="name" type="text" placeholder="Alex" required />
+                </div>
+                <div class="field">
+                  <label for="handle">Discord or X Handle</label>
+                  <input id="handle" name="handle" type="text" placeholder="@yourname" required />
+                </div>
+                <div class="field">
+                  <label for="project">Project Type</label>
+                  <select id="project" name="project" required>
+                    <option value="Thumbnail">YouTube Thumbnail</option>
+                    <option value="Banner">Channel Banner</option>
+                    <option value="Pack">Thumbnail Pack</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="budget">Budget (USD)</label>
+                  <select id="budget" name="budget">
+                    <option value="$25-50">$25–50</option>
+                    <option value="$50-100">$50–100</option>
+                    <option value="$100-200">$100–200</option>
+                    <option value="Custom">Custom</option>
+                  </select>
+                </div>
+                <div class="field span-2">
+                  <label for="details">Details</label>
+                  <textarea id="details" name="details" rows="5" placeholder="What do you need? Style, deadline, references…" required></textarea>
+                </div>
+                <div class="actions-row">
+                  <button type="submit" class="btn">Copy Brief</button>
+                  <button type="reset" class="btn" aria-label="Clear form">Clear</button>
+                </div>
+                <p class="muted small">Tip: After copying, paste the brief into a Discord DM.</p>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer container">
+      <small>&copy; <span id="year"></span> larzy</small>
+    </footer>
+  </body>
+  </html>
