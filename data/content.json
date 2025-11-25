@@ -1,0 +1,245 @@
+{
+  "home": {
+    "heroTag": "Minecraft Thumbnail Artist",
+    "heroTitleLine1": "Thumbnails",
+    "heroTitleLine2": "That Attract Viewers",
+    "heroDescription": "Hey, I'm larzy, a Minecraft Thumbnail designer with over 2 years of experience in the field. Each thumbnail I create is directed towards your audience to ensure maximum clicks.",
+    "primaryCta": "View Work",
+    "secondaryCta": "Commission Now"
+  },
+  "about": {
+    "tagline": "Designing thumbnails that earn clicks.",
+    "sections": [
+      {
+        "title": "Bio",
+        "body": "Hey, I'm larzy. I design Minecraft thumbnails focused on clarity, color separation, and readable typography. My goal is simple: make your content stand out in a crowded feed."
+      },
+      {
+        "title": "Process",
+        "body": "Quick brief + concept + iteration + delivery. I keep feedback tight and deliver fast without sacrificing quality."
+      },
+      {
+        "title": "Tools",
+        "body": "Photoshop, Illustrator, custom brushes, and a healthy respect for negative space."
+      }
+    ]
+  },
+  "work": [
+    {
+      "src": "assets/thumbnails/VivillyPoppy.png",
+      "label": "@Vivilly",
+      "alt": "Minecraft thumbnail 1"
+    },
+    {
+      "src": "uploads/3cadf8724b0237eb.png",
+      "label": "Practice",
+      "alt": "Minecraft thumbnail 2"
+    },
+    {
+      "src": "assets/thumbnails/wisp.png",
+      "label": "@Wisp",
+      "alt": "Minecraft thumbnail 3"
+    },
+    {
+      "src": "assets/thumbnails/llama.png",
+      "label": "@Llama and Sticks",
+      "alt": "Minecraft thumbnail 4"
+    },
+    {
+      "src": "assets/thumbnails/gold.png",
+      "label": "@GoldActual",
+      "alt": "Minecraft thumbnail 5"
+    },
+    {
+      "src": "assets/thumbnails/vivillysmiler.png",
+      "label": "@Vivilly",
+      "alt": "Minecraft thumbnail 6"
+    },
+    {
+      "src": "assets/thumbnails/dinosaur.png",
+      "label": "@Vivilly",
+      "alt": "Minecraft thumbnail 8"
+    },
+    {
+      "src": "assets/thumbnails/Tears.png",
+      "label": "@Tears",
+      "alt": "Minecraft thumbnail 7"
+    },
+    {
+      "src": "assets/thumbnails/jamsteo.png",
+      "label": "@Jamsteo",
+      "alt": "Minecraft thumbnail 9"
+    },
+    {
+      "src": "assets/thumbnails/Lynix 67 Night.png",
+      "label": "@Lynix",
+      "alt": "Minecraft thumbnail 10"
+    },
+    {
+      "src": "assets/thumbnails/snipers tn1.png",
+      "label": "@SnipersVoid",
+      "alt": "Minecraft thumbnail 11"
+    },
+    {
+      "src": "assets/thumbnails/freshi.png",
+      "label": "@Freshi",
+      "alt": "Minecraft thumbnail 12"
+    },
+    {
+      "src": "assets/thumbnails/vivillypalpers.png",
+      "label": "@Vivilly",
+      "alt": "Minecraft thumbnail 13"
+    },
+    {
+      "src": "assets/thumbnails/blocky.png",
+      "label": "@Blocky",
+      "alt": "Minecraft thumbnail 14"
+    },
+    {
+      "src": "assets/thumbnails/AStrangeCreature.png",
+      "label": "@AStrangeCreature",
+      "alt": "Minecraft thumbnail 15"
+    },
+    {
+      "src": "assets/thumbnails/jamsteo 2nd v2thumbnail.png",
+      "label": "@Jamsteo",
+      "alt": "Minecraft thumbnail 16"
+    },
+    {
+      "src": "assets/thumbnails/freshi3.png",
+      "label": "@Freshi",
+      "alt": "Minecraft thumbnail 17"
+    },
+    {
+      "src": "assets/thumbnails/vivilly robot tn v2.png",
+      "label": "@Vivilly",
+      "alt": "Minecraft thumbnail 18"
+    }
+  ],
+  "clients": [
+    {
+      "handle": "@Wisp",
+      "subs": "5.6M Subs",
+      "avatar": "uploads/a81b34a17aba3047.png"
+    },
+    {
+      "handle": "@NotVixios",
+      "subs": "2.2M Subs",
+      "avatar": "assets/youtube/vixios.png"
+    },
+    {
+      "handle": "@Flayming",
+      "subs": "1.76M Subs",
+      "avatar": "assets/youtube/flayming.png"
+    },
+    {
+      "handle": "@Vivilly",
+      "subs": "1.5M Subs",
+      "avatar": "assets/youtube/vivilly.png"
+    },
+    {
+      "handle": "@Lynix",
+      "subs": "1.5M Subs",
+      "avatar": "assets/youtube/lynix.png"
+    },
+    {
+      "handle": "@lolFrosty",
+      "subs": "1.2M Subs",
+      "avatar": "assets/youtube/frosty.png"
+    },
+    {
+      "handle": "@ThatChiefGuy",
+      "subs": "650K Subs",
+      "avatar": "assets/youtube/chiefguy.png"
+    },
+    {
+      "handle": "@Baablu",
+      "subs": "500k Subs",
+      "avatar": "assets/youtube/baablu.png"
+    },
+    {
+      "handle": "@GoldActual",
+      "subs": "350K Subs",
+      "avatar": "assets/youtube/goldactual.png"
+    },
+    {
+      "handle": "@TrainerDario",
+      "subs": "300K Subs",
+      "avatar": "assets/youtube/trainerdario.png"
+    },
+    {
+      "handle": "@Jamsteo",
+      "subs": "126K Subs",
+      "avatar": "assets/youtube/jamsteo.png"
+    },
+    {
+      "handle": "@Yuruze",
+      "subs": "100K Subs",
+      "avatar": "assets/youtube/yuruze.png"
+    },
+    {
+      "handle": "@RiceFarmer11",
+      "subs": "100k Subs",
+      "avatar": "assets/youtube/ricefarmer.png"
+    },
+    {
+      "handle": "@Jooonah",
+      "subs": "100K Subs",
+      "avatar": "assets/youtube/jooonah.png"
+    },
+    {
+      "handle": "@Dewier",
+      "subs": "100K Subs",
+      "avatar": "assets/youtube/dewier.png"
+    },
+    {
+      "handle": "@TheLaSteve",
+      "subs": "50K Subs",
+      "avatar": "assets/youtube/thelasteve.png"
+    }
+  ],
+  "reviews": [
+    {
+      "name": "@NotVixios",
+      "role": "2.0M subs",
+      "avatar": "assets/youtube/vixios.png",
+      "quote": "Clean and fast thumbnails!"
+    },
+    {
+      "name": "@Kbashed",
+      "role": "Designer",
+      "avatar": "assets/reviews/kbashed.jpg",
+      "quote": "Larzy is one of the most talented designers I've had the pleasure of talking to. He pairs beautiful design with a great instinct for what makes a high-performing idea."
+    },
+    {
+      "name": "@Freshi",
+      "role": "17.4k subs",
+      "avatar": "assets/youtube/freshi.png",
+      "quote": "Larzy is one of the most talented thumbnail designers mate, he never misses - truly the goat."
+    },
+    {
+      "name": "@Jamsteo",
+      "role": "126k subs",
+      "avatar": "assets/youtube/jamsteo.png",
+      "quote": "You're genuinely one of the best thumbnail designers I know. You actually work with your clients and deliver thumbnails that get clicks."
+    },
+    {
+      "name": "@Vivilly",
+      "role": "1.5M subs",
+      "avatar": "assets/youtube/vivilly.png",
+      "quote": "Larzy is amazing! Has a lot of experience and puts 100% in each and every project!"
+    },
+    {
+      "name": "@ArikDZN",
+      "role": "3D Artist",
+      "avatar": "assets/reviews/arik.jpg",
+      "quote": "As a 3D artist myself, I can confidently say Larzy's work is incredible. His composition, color sense, and understanding of the YouTube algorithm keep pushing his art further. I've seen videos with his thumbnails consistently perform best."
+    },
+    {
+      "name": "@NothFX",
+      "role": "Video Editor",
+      "avatar": "assets/reviews/nothv2_pfp.png",
+      "quote": "Such a lovely person to work with. Thumbnails are up to par and I would definitely recommend him to anyone!"
+    }
+  ]
+}

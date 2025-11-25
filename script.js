@@ -1,5 +1,6 @@
 // Register GSAP + ScrollTrigger
-window.addEventListener('DOMContentLoaded', () => {
+let siteContent = null;
+window.addEventListener('DOMContentLoaded', async () => {
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // Smooth-ish anchor scroll for browsers without native smooth
@@ -96,9 +97,15 @@ window.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('resize', ensureFill);
   }
 
-  // Clients: render from JSON for easy updates
+  // Clients / content rendering
   const clientsContainer = document.querySelector('.clients[data-source]');
-  
+
+  function normalizeAssetPath(src) {
+    if (!src) return '';
+    if (/^https?:\/\//i.test(src)) return src;
+    return src.startsWith('/') ? src : '/' + src.replace(/^\.?\//, '');
+  }
+
   function renderClients(list) {
     if (!clientsContainer || !Array.isArray(list)) return;
     clientsContainer.innerHTML = '';
@@ -106,12 +113,11 @@ window.addEventListener('DOMContentLoaded', () => {
     list.forEach(c => {
       const handle = c.handle || c.name || 'Client';
       const subs = c.subs || c.subscribers || '';
-      const avatar = c.avatar || 'https://placehold.co/96x96/png';
-      // platform removed for simplified display (avatar, handle, subs only)
+      const avatar = normalizeAssetPath(c.avatar) || 'https://placehold.co/96x96/png';
       const card = document.createElement('article');
       card.className = 'client-card reveal';
       card.innerHTML = `
-        <img class="avatar" src="${avatar}" alt="${handle} avatar" loading="lazy" decoding="async" width="84" height="84"/>
+        <img class="avatar" src="${avatar}" alt="${handle} avatar" loading="lazy" decoding="async" width="84" height="84" onerror="this.src='https://placehold.co/96x96/png';"/>
         <div class="meta">
           <h3>${handle}</h3>
           <div class="subs">${subs}</div>
@@ -119,7 +125,6 @@ window.addEventListener('DOMContentLoaded', () => {
       frag.appendChild(card);
     });
     clientsContainer.appendChild(frag);
-    // Hook new elements into reveal animations if GSAP is available
     if (window.gsap && window.ScrollTrigger) {
       clientsContainer.querySelectorAll('.reveal').forEach((el, i) => {
         gsap.to(el, {
@@ -128,12 +133,15 @@ window.addEventListener('DOMContentLoaded', () => {
         });
       });
     } else {
-      // Fallback: just show them
       clientsContainer.querySelectorAll('.reveal').forEach(el => { el.style.opacity = 1; el.style.transform = 'none'; });
     }
   }
 
   async function loadClients() {
+    if (siteContent && Array.isArray(siteContent.clients)) {
+      renderClients(siteContent.clients);
+      return;
+    }
     if (!clientsContainer) return;
     const src = clientsContainer.getAttribute('data-source');
     try {
@@ -154,7 +162,6 @@ window.addEventListener('DOMContentLoaded', () => {
       } catch (e) {}
     }
   }
-  loadClients();
 
   function parseSubsToNumber(text) {
     if (!text) return 0;
@@ -199,6 +206,32 @@ window.addEventListener('DOMContentLoaded', () => {
   const btnPrev = document.getElementById('reviews-prev');
   const btnNext = document.getElementById('reviews-next');
   let rvIndex = 0;
+
+  function renderReviews(list) {
+    if (!rvTrack || !Array.isArray(list)) return;
+    rvTrack.innerHTML = '';
+    const frag = document.createDocumentFragment();
+    list.forEach(item => {
+      const avatar = normalizeAssetPath(item.avatar) || 'https://placehold.co/64x64/png';
+      const card = document.createElement('article');
+      card.className = 'review-card';
+      card.innerHTML = `
+        <div class="review-header">
+          <img class="avatar" src="${avatar}" alt="${item.name || 'Client'}" loading="lazy" decoding="async" onerror="this.src='https://placehold.co/64x64/png';"/>
+          <div>
+            <div class="name">${item.name || 'Client'}</div>
+            <div class="muted">${item.role || ''}</div>
+          </div>
+        </div>
+        <p class="quote">${item.quote || ''}</p>
+      `;
+      frag.appendChild(card);
+    });
+    rvTrack.appendChild(frag);
+    const n = list.length;
+    if (n) rvIndex = Math.floor(n / 2);
+    rvSnapToCurrent();
+  }
   function rvCards() { return rvTrack ? Array.from(rvTrack.querySelectorAll('.review-card')) : []; }
   function rvUpdateClasses(cards) {
     cards.forEach((c,i) => {
@@ -233,6 +266,62 @@ window.addEventListener('DOMContentLoaded', () => {
     if (n) rvIndex = Math.floor(n / 2);
     rvSnapToCurrent();
   }, 50);
+
+  async function loadContentJSON() {
+    try {
+      const res = await fetch('data/content.json', { cache: 'no-store' });
+      if (!res.ok) return null;
+      return await res.json();
+    } catch (err) {
+      const inline = document.getElementById('content-inline');
+      if (inline?.textContent) {
+        try { return JSON.parse(inline.textContent); } catch (_) {}
+      }
+      return null;
+    }
+  }
+
+  function renderWork(list) {
+    const grid = document.getElementById('work-grid');
+    if (!grid || !Array.isArray(list)) return;
+    grid.innerHTML = '';
+    const frag = document.createDocumentFragment();
+    const parallaxValues = [0.25, 0.12, 0.16, 0.18, 0.22, 0.14, 0.20, 0.12, 0.16, 0.18, 0.22, 0.14, 0.20, 0.12, 0.16, 0.18, 0.22, 0.14];
+    list.forEach((item, idx) => {
+      const card = document.createElement('article');
+      card.className = 'card tilt-card reveal';
+      const depth = item.parallax || parallaxValues[idx % parallaxValues.length];
+      card.setAttribute('data-parallax', depth);
+      const src = normalizeAssetPath(item.src) || 'https://placehold.co/400x240/png';
+      const alt = item.alt || item.label || 'Thumbnail';
+      const label = item.label || '';
+      card.innerHTML = `
+        <img class="thumb" src="${src}" alt="${alt}" loading="lazy" decoding="async" onerror="this.src='https://placehold.co/400x240/png';"/>
+        <div class="shine"></div>
+        <span class="label">${label}</span>
+      `;
+      frag.appendChild(card);
+    });
+    grid.appendChild(frag);
+    setupShowMore();
+    setupLightbox();
+    // Ensure newly rendered items are visible even without GSAP
+    grid.querySelectorAll('.card').forEach(card => {
+      card.style.opacity = '1';
+      card.style.transform = 'none';
+    });
+  }
+
+  (async function initContent() {
+    siteContent = await loadContentJSON();
+    if (siteContent) {
+      renderWork(siteContent.work);
+      renderClients(siteContent.clients || []);
+      renderReviews(siteContent.reviews || []);
+    } else {
+      loadClients();
+    }
+  })();
 
   // Commission: copy Discord tag
   document.getElementById('copy-discord')?.addEventListener('click', async (e) => {
@@ -277,7 +366,7 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   // Show More / Show Less with smooth height + fade transitions
-  (function setupShowMore() {
+  function setupShowMore() {
     const grid = document.getElementById('work-grid');
     const btn = document.getElementById('show-more');
     if (!grid || !btn) return;
@@ -301,14 +390,12 @@ window.addEventListener('DOMContentLoaded', () => {
       btn.hidden = items.length <= initialCount();
     };
 
-    // Set initial collapsed state
     const init = () => {
       const keep = initialCount();
       items.forEach((it, idx) => {
         const hide = idx >= keep;
         it.classList.toggle('hidden-item', hide);
         if (hide) {
-          // Ensure base .reveal style doesn't force opacity back to 0
           it.classList.remove('reveal');
           it.style.transition = '';
           it.style.opacity = '';
@@ -321,7 +408,6 @@ window.addEventListener('DOMContentLoaded', () => {
       grid.style.maxHeight = from + 'px';
       grid.style.overflow = 'hidden';
       grid.style.transition = 'max-height ' + HEIGHT_MS + 'ms cubic-bezier(.2,.7,.3,1)';
-      // force reflow
       void grid.offsetHeight;
       grid.style.maxHeight = to + 'px';
       window.setTimeout(() => {
@@ -337,13 +423,11 @@ window.addEventListener('DOMContentLoaded', () => {
       const toShow = items.filter(it => it.classList.contains('hidden-item'));
       toShow.forEach(it => {
         it.classList.remove('hidden-item');
-        it.classList.remove('reveal'); // prevent CSS from resetting opacity to 0
+        it.classList.remove('reveal');
         it.style.opacity = '0';
       });
-      // measure after height
       const after = grid.getBoundingClientRect().height;
       animateGridHeight(before, after);
-      // fade in newly shown items
       window.requestAnimationFrame(() => {
         toShow.forEach(it => { it.style.transition = 'opacity ' + FADE_MS + 'ms ease'; it.style.opacity = '1'; });
       });
@@ -358,9 +442,7 @@ window.addEventListener('DOMContentLoaded', () => {
       const before = grid.getBoundingClientRect().height;
       const keep = initialCount();
       const toHide = items.filter((_, idx) => idx >= keep && !items[idx].classList.contains('hidden-item'));
-      // fade out items first
       toHide.forEach(it => { it.style.transition = 'opacity ' + FADE_MS + 'ms ease'; it.style.opacity = '0'; });
-      // start height animation after short fade
       window.setTimeout(() => {
         toHide.forEach(it => { it.classList.add('hidden-item'); it.style.transition = ''; it.style.opacity = ''; });
         const after = grid.getBoundingClientRect().height;
@@ -372,10 +454,11 @@ window.addEventListener('DOMContentLoaded', () => {
     init();
     window.addEventListener('resize', () => { if (!animating) { expanded ? expand() : init(); } });
     btn.addEventListener('click', () => { expanded ? collapse() : expand(); });
-  })();
+  }
+  setupShowMore();
 
   // Lightbox for work thumbnails
-  (function setupLightbox() {
+  function setupLightbox() {
     const thumbs = document.querySelectorAll('#work .card .thumb');
     if (!thumbs.length) return;
     const overlay = document.createElement('div');
@@ -398,7 +481,7 @@ window.addEventListener('DOMContentLoaded', () => {
         overlay.classList.add('is-open');
       });
     });
-  })();
+  }
+  setupLightbox();
 
 });
-

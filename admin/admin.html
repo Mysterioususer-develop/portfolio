@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Portfolio Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+  <div id="login-screen" class="overlay">
+    <form id="login-form" class="card">
+      <h1>Admin Login</h1>
+      <p class="muted">Enter the password set in <code>admin/server.js</code>.</p>
+      <label class="field">
+        <span>Password</span>
+        <input type="password" id="admin-password" autocomplete="current-password" required />
+      </label>
+      <button type="submit" class="btn primary">Login</button>
+      <div id="login-error" class="error"></div>
+    </form>
+  </div>
+
+  <div id="app" class="app hidden">
+    <header class="topbar">
+      <div class="brand">
+        <div class="dot"></div>
+        <div>
+          <div class="eyebrow">Local Admin</div>
+          <div class="title">Portfolio CMS</div>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button id="btn-refresh" class="btn ghost" type="button">Reload</button>
+        <button id="btn-save" class="btn primary" type="button">Save</button>
+        <button id="btn-publish" class="btn" type="button">Publish</button>
+        <button id="btn-logout" class="btn ghost" type="button">Logout</button>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="nav">
+          <button class="nav-btn active" data-target="home">Home</button>
+          <button class="nav-btn" data-target="work">Work</button>
+          <button class="nav-btn" data-target="clients">Clients</button>
+          <button class="nav-btn" data-target="reviews">Reviews</button>
+          <button class="nav-btn" data-target="about">About</button>
+        </div>
+        <div class="sidebar-note">
+          <strong>Tip:</strong> Drag the handle to reorder. Uploads are stored in <code>/admin/uploads</code>. UI collapse state is saved locally.
+        </div>
+      </aside>
+
+      <main class="panels">
+        <section id="panel-home" class="panel open" data-section="home">
+          <header class="panel-head">
+            <div>
+              <p class="eyebrow">Hero</p>
+              <h2>Home Text</h2>
+            </div>
+            <div class="panel-actions">
+              <button class="btn ghost toggle">Collapse</button>
+            </div>
+          </header>
+          <div class="panel-body grid">
+            <label class="field">
+              <span>Tagline</span>
+              <input type="text" id="home-tag" placeholder="Minecraft Thumbnail Artist" />
+            </label>
+            <label class="field">
+              <span>Title Line 1 (gradient)</span>
+              <input type="text" id="home-title-1" placeholder="Thumbnails" />
+            </label>
+            <label class="field">
+              <span>Title Line 2</span>
+              <input type="text" id="home-title-2" placeholder="That Attract Viewers" />
+            </label>
+            <label class="field span-2">
+              <span>Description</span>
+              <textarea id="home-description" rows="3" placeholder="Short intro for hero"></textarea>
+            </label>
+            <label class="field">
+              <span>Primary CTA</span>
+              <input type="text" id="home-cta-1" placeholder="View Work" />
+            </label>
+            <label class="field">
+              <span>Secondary CTA</span>
+              <input type="text" id="home-cta-2" placeholder="Commission Now" />
+            </label>
+          </div>
+        </section>
+
+        <section id="panel-work" class="panel open" data-section="work">
+          <header class="panel-head">
+            <div>
+              <p class="eyebrow">Portfolio Grid</p>
+              <h2>Work Items</h2>
+            </div>
+            <div class="panel-actions">
+              <button class="btn ghost" id="add-work-row" type="button">Add Row (3)</button>
+              <button class="btn ghost toggle">Collapse</button>
+              <button class="btn" id="add-work" type="button">Add New Item</button>
+            </div>
+          </header>
+          <div class="panel-body">
+            <div id="work-list" class="item-list work-grid"></div>
+          </div>
+        </section>
+
+        <section id="panel-clients" class="panel open" data-section="clients">
+          <header class="panel-head">
+            <div>
+              <p class="eyebrow">Social Proof</p>
+              <h2>Clients</h2>
+            </div>
+            <div class="panel-actions">
+              <button class="btn ghost toggle">Collapse</button>
+              <button class="btn" id="add-client" type="button">Add New Client</button>
+            </div>
+          </header>
+          <div class="panel-body">
+            <div id="clients-list" class="item-list"></div>
+          </div>
+        </section>
+
+        <section id="panel-reviews" class="panel open" data-section="reviews">
+          <header class="panel-head">
+            <div>
+              <p class="eyebrow">Testimonials</p>
+              <h2>Reviews</h2>
+            </div>
+            <div class="panel-actions">
+              <button class="btn ghost toggle">Collapse</button>
+              <button class="btn" id="add-review" type="button">Add New Review</button>
+            </div>
+          </header>
+          <div class="panel-body">
+            <div id="reviews-list" class="item-list"></div>
+          </div>
+        </section>
+
+        <section id="panel-about" class="panel open" data-section="about">
+          <header class="panel-head">
+            <div>
+              <p class="eyebrow">Story</p>
+              <h2>About Sections</h2>
+            </div>
+            <div class="panel-actions">
+              <button class="btn ghost toggle">Collapse</button>
+              <button class="btn" id="add-about" type="button">Add Section</button>
+            </div>
+          </header>
+          <div class="panel-body">
+            <label class="field">
+              <span>Tagline</span>
+              <input type="text" id="about-tagline" placeholder="Designing thumbnails that earn clicks." />
+            </label>
+            <div id="about-list" class="item-list"></div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
