@@ -81,14 +81,14 @@
       "alt": "Minecraft thumbnail 10"
     },
     {
-      "src": "assets/thumbnails/snipers tn1.png",
-      "label": "@SnipersVoid",
-      "alt": "Minecraft thumbnail 11"
-    },
-    {
       "src": "assets/thumbnails/freshi.png",
       "label": "@Freshi",
       "alt": "Minecraft thumbnail 12"
+    },
+    {
+      "src": "assets/thumbnails/snipers tn1.png",
+      "label": "@SnipersVoid",
+      "alt": "Minecraft thumbnail 11"
     },
     {
       "src": "assets/thumbnails/vivillypalpers.png",
