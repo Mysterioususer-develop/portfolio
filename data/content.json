@@ -26,6 +26,11 @@
   },
   "work": [
     {
+      "src": "assets/thumbnails/llama.png",
+      "label": "@Llama and Sticks",
+      "alt": "Minecraft thumbnail 4"
+    },
+    {
       "src": "assets/thumbnails/VivillyPoppy.png",
       "label": "@Vivilly",
       "alt": "Minecraft thumbnail 1"
@@ -39,11 +44,6 @@
       "src": "assets/thumbnails/wisp.png",
       "label": "@Wisp",
       "alt": "Minecraft thumbnail 3"
-    },
-    {
-      "src": "assets/thumbnails/llama.png",
-      "label": "@Llama and Sticks",
-      "alt": "Minecraft thumbnail 4"
     },
     {
       "src": "assets/thumbnails/gold.png",
