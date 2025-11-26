@@ -31,11 +31,6 @@
       "alt": "Minecraft thumbnail 1"
     },
     {
-      "src": "assets/thumbnails/mylespractice.png",
-      "label": "Practice",
-      "alt": "Minecraft thumbnail 2"
-    },
-    {
       "src": "assets/thumbnails/wisp.png",
       "label": "@Wisp",
       "alt": "Minecraft thumbnail 3"
@@ -114,6 +109,11 @@
       "src": "assets/thumbnails/vivilly robot tn v2.png",
       "label": "@Vivilly",
       "alt": "Minecraft thumbnail 18"
+    },
+    {
+      "src": "",
+      "label": "",
+      "alt": ""
     }
   ],
   "clients": [
