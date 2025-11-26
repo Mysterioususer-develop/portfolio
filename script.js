@@ -60,27 +60,38 @@ window.addEventListener('DOMContentLoaded', async () => {
     gsap.to(o, { y: 8, repeat: -1, yoyo: true, duration: 2 + i, ease: 'sine.inOut', delay: i * 0.2 });
   });
 
-  // Tilt cards
-  const cards = document.querySelectorAll('.tilt-card');
-  const constrain = 12;
-  cards.forEach(card => {
-    const shine = card.querySelector('.shine');
-    function handleMove(e) {
-      const rect = card.getBoundingClientRect();
-      const mx = (e.clientX - rect.left) / rect.width; // 0..1
-      const my = (e.clientY - rect.top) / rect.height; // 0..1
-      const rx = (0.5 - my) * constrain;
-      const ry = (mx - 0.5) * constrain;
-      card.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`;
-      if (shine) {
+  // Tilt cards (reusable for dynamically rendered thumbnails)
+  function setupTilt(scope = document) {
+    const cards = scope.querySelectorAll('.tilt-card:not([data-tilt-bound])');
+    const constrain = 12;
+    cards.forEach(card => {
+      card.dataset.tiltBound = 'true';
+      let shine = card.querySelector('.shine');
+      if (!shine) {
+        shine = document.createElement('div');
+        shine.className = 'shine';
+        card.appendChild(shine);
+      }
+      const handleMove = (e) => {
+        const rect = card.getBoundingClientRect();
+        const mx = (e.clientX - rect.left) / rect.width; // 0..1
+        const my = (e.clientY - rect.top) / rect.height; // 0..1
+        const rx = (0.5 - my) * constrain;
+        const ry = (mx - 0.5) * constrain;
+        card.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`;
         shine.style.setProperty('--mx', `${mx * 100}%`);
         shine.style.setProperty('--my', `${my * 100}%`);
-      }
-    }
-    function reset() { card.style.transform = 'perspective(800px) rotateX(0) rotateY(0)'; }
-    card.addEventListener('mousemove', handleMove);
-    card.addEventListener('mouseleave', reset);
-  });
+        shine.style.opacity = '1';
+      };
+      const reset = () => {
+        card.style.transform = 'perspective(800px) rotateX(0) rotateY(0)';
+        shine.style.opacity = '0';
+      };
+      card.addEventListener('mousemove', handleMove);
+      card.addEventListener('mouseleave', reset);
+    });
+  }
+  setupTilt();
 
   // Marquee: ensure continuous loop by duplicating items to 2x width
   const marquee = document.querySelector('.marquee');
@@ -305,6 +316,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     grid.appendChild(frag);
     setupShowMore();
     setupLightbox();
+    setupTilt(grid);
     // Ensure newly rendered items are visible even without GSAP
     grid.querySelectorAll('.card').forEach(card => {
       card.style.opacity = '1';
