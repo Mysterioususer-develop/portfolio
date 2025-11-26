@@ -26,14 +26,19 @@
   },
   "work": [
     {
-      "src": "assets/thumbnails/VivillyPoppy.png",
-      "label": "@Vivilly",
-      "alt": "Minecraft thumbnail 1"
+      "src": "assets/thumbnails/freshi4.png",
+      "label": "@Freshi",
+      "alt": ""
     },
     {
       "src": "assets/thumbnails/mylespractice.png",
       "label": "Practice",
       "alt": ""
+    },
+    {
+      "src": "assets/thumbnails/VivillyPoppy.png",
+      "label": "@Vivilly",
+      "alt": "Minecraft thumbnail 1"
     },
     {
       "src": "assets/thumbnails/wisp.png",
@@ -49,6 +54,11 @@
       "src": "assets/thumbnails/gold.png",
       "label": "@GoldActual",
       "alt": "Minecraft thumbnail 5"
+    },
+    {
+      "src": "assets/thumbnails/avoma.png",
+      "label": "@Avoma",
+      "alt": ""
     },
     {
       "src": "assets/thumbnails/vivillysmiler.png",
@@ -116,18 +126,8 @@
       "alt": "Minecraft thumbnail 18"
     },
     {
-      "src": "assets/thumbnails/freshi4.png",
-      "label": "",
-      "alt": ""
-    },
-    {
       "src": "assets/thumbnails/scarydude.png",
-      "label": "",
-      "alt": ""
-    },
-    {
-      "src": "assets/thumbnails/avoma.png",
-      "label": "",
+      "label": "@Vivilly",
       "alt": ""
     }
   ],
