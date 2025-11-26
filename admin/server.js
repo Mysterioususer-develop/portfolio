@@ -143,14 +143,18 @@ app.post('/api/upload', requireAuth, (req, res) => {
 });
 
 app.post('/api/publish', requireAuth, async (req, res) => {
-  const runGit = process.env.ENABLE_GIT_PUBLISH === 'true';
+  const enableEnv = process.env.ENABLE_GIT_PUBLISH;
+  const runGit = (typeof enableEnv === 'undefined') ? true : enableEnv === 'true';
   if (!runGit) return res.json({ ok: true, message: 'Publish hook is disabled. Set ENABLE_GIT_PUBLISH=true to enable.' });
 
   const commitMsg = (req.body && req.body.message) || 'Update content';
-  exec('git add . && git commit -m "' + commitMsg.replace(/"/g, '\\"') + '" && git push', { cwd: ROOT }, (err, stdout, stderr) => {
+  const safeMsg = commitMsg.replace(/"/g, '\\"');
+  const cmd = `git add . && git commit -m "${safeMsg}" && git push`;
+
+  exec(cmd, { cwd: ROOT }, (err, stdout, stderr) => {
     if (err) {
       console.error('Git publish failed', stderr || err);
-      return res.status(500).json({ error: 'Git publish failed', details: stderr || err.message });
+      return res.status(500).json({ error: 'Git publish failed', details: (stderr || err.message || String(err)).trim() });
     }
     return res.json({ ok: true, output: stdout });
   });
