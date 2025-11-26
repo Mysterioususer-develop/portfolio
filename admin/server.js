@@ -84,6 +84,15 @@ async function writeJson(file, data) {
   await fs.writeFile(file, JSON.stringify(data, null, 2), 'utf8');
 }
 
+function execAsync(cmd) {
+  return new Promise((resolve, reject) => {
+    exec(cmd, { cwd: ROOT }, (err, stdout, stderr) => {
+      if (err) return reject({ err, stderr: (stderr || err.message || '').trim() });
+      resolve({ stdout: stdout || '', stderr: stderr || '' });
+    });
+  });
+}
+
 app.post('/api/login', async (req, res) => {
   const { password } = req.body || {};
   if (!password || password !== ADMIN_PASSWORD) {
@@ -147,17 +156,40 @@ app.post('/api/publish', requireAuth, async (req, res) => {
   const runGit = (typeof enableEnv === 'undefined') ? true : enableEnv === 'true';
   if (!runGit) return res.json({ ok: true, message: 'Publish hook is disabled. Set ENABLE_GIT_PUBLISH=true to enable.' });
 
-  const commitMsg = (req.body && req.body.message) || 'Update content';
-  const safeMsg = commitMsg.replace(/"/g, '\\"');
-  const cmd = `git add . && git commit -m "${safeMsg}" && git push`;
+  try {
+    const commitMsg = (req.body && req.body.message) || 'Update content';
+    const safeMsg = commitMsg.replace(/"/g, '\\"');
 
-  exec(cmd, { cwd: ROOT }, (err, stdout, stderr) => {
-    if (err) {
-      console.error('Git publish failed', stderr || err);
-      return res.status(500).json({ error: 'Git publish failed', details: (stderr || err.message || String(err)).trim() });
+    // Detect branch
+    let branch = 'main';
+    try {
+      const { stdout } = await execAsync('git rev-parse --abbrev-ref HEAD');
+      branch = stdout.trim() || branch;
+    } catch (_) { /* fallback to main */ }
+
+    // Only commit/push if there are changes
+    const { stdout: statusOut } = await execAsync('git status --porcelain');
+    if (!statusOut.trim()) {
+      return res.json({ ok: true, message: 'No changes to publish' });
     }
-    return res.json({ ok: true, output: stdout });
-  });
+
+    await execAsync('git add .');
+    await execAsync(`git commit -m "${safeMsg}"`);
+
+    let needsUpstream = false;
+    try {
+      await execAsync('git rev-parse --abbrev-ref --symbolic-full-name @{upstream}');
+    } catch (_) {
+      needsUpstream = true;
+    }
+    const pushCmd = needsUpstream ? `git push -u origin ${branch}` : 'git push';
+    const { stdout } = await execAsync(pushCmd);
+    return res.json({ ok: true, output: stdout || 'Publish complete' });
+  } catch (e) {
+    const details = e?.stderr || e?.err?.message || String(e);
+    console.error('Git publish failed', details);
+    return res.status(500).json({ error: 'Git publish failed', details });
+  }
 });
 
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
