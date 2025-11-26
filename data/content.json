@@ -114,6 +114,21 @@
       "src": "assets/thumbnails/vivilly robot tn v2.png",
       "label": "@Vivilly",
       "alt": "Minecraft thumbnail 18"
+    },
+    {
+      "src": "assets/thumbnails/freshi4.png",
+      "label": "",
+      "alt": ""
+    },
+    {
+      "src": "assets/thumbnails/scarydude.png",
+      "label": "",
+      "alt": ""
+    },
+    {
+      "src": "assets/thumbnails/avoma.png",
+      "label": "",
+      "alt": ""
     }
   ],
   "clients": [
