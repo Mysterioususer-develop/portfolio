@@ -31,11 +31,6 @@
       "alt": "Minecraft thumbnail 1"
     },
     {
-      "src": "assets/thumbnails/mylespractice.png",
-      "label": "Practice",
-      "alt": ""
-    },
-    {
       "src": "assets/thumbnails/wisp.png",
       "label": "@Wisp",
       "alt": "Minecraft thumbnail 3"
@@ -49,6 +44,11 @@
       "src": "assets/thumbnails/gold.png",
       "label": "@GoldActual",
       "alt": "Minecraft thumbnail 5"
+    },
+    {
+      "src": "assets/thumbnails/mylespractice.png",
+      "label": "Practice",
+      "alt": ""
     },
     {
       "src": "assets/thumbnails/vivillysmiler.png",
