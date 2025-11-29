@@ -35,6 +35,11 @@
     "avatar": "assets/youtube/chiefguy.png"
   },
   {
+    "handle": "@TheLaSteve",
+    "subs": "550K Subs",
+    "avatar": "assets/youtube/axohmc.png"
+  },
+  {
     "handle": "@Baablu",
     "subs": "500k Subs",
     "avatar": "assets/youtube/baablu.png"
@@ -73,10 +78,5 @@
     "handle": "@Dewier",
     "subs": "100K Subs",
     "avatar": "assets/youtube/dewier.png"
-  },
-  {
-    "handle": "@TheLaSteve",
-    "subs": "50K Subs",
-    "avatar": "assets/youtube/thelasteve.png"
   }
 ]
