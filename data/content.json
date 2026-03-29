@@ -112,7 +112,7 @@
     },
     {
       "src": "assets/thumbnails/grisly1.png",
-      "label": "",
+      "label": "@GrislyDeshaun",
       "alt": ""
     },
     {
@@ -131,14 +131,14 @@
       "alt": "Minecraft thumbnail 12"
     },
     {
-      "src": "assets/thumbnails/vivillypalpers.png",
-      "label": "@Vivilly",
-      "alt": "Minecraft thumbnail 13"
-    },
-    {
       "src": "assets/thumbnails/scarydude.png",
       "label": "@Vivilly",
       "alt": ""
+    },
+    {
+      "src": "assets/thumbnails/vivillypalpers.png",
+      "label": "@Vivilly",
+      "alt": "Minecraft thumbnail 13"
     },
     {
       "src": "assets/thumbnails/AStrangeCreature.png",
