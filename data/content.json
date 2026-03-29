@@ -42,7 +42,7 @@
     },
     {
       "src": "assets/thumbnails/syszee.png",
-      "label": "@Systemzee",
+      "label": "@SystemZee",
       "alt": ""
     },
     {
@@ -67,7 +67,7 @@
     },
     {
       "src": "assets/thumbnails/systemzee3.png",
-      "label": "@Systemzee",
+      "label": "@SystemZee",
       "alt": ""
     },
     {
@@ -91,9 +91,19 @@
       "alt": "Minecraft thumbnail 8"
     },
     {
+      "src": "assets/thumbnails/Lynix 67 Night.png",
+      "label": "@Lynix",
+      "alt": "Minecraft thumbnail 10"
+    },
+    {
       "src": "assets/thumbnails/Tears.png",
       "label": "@Tears",
       "alt": "Minecraft thumbnail 7"
+    },
+    {
+      "src": "assets/thumbnails/aylamar.png",
+      "label": "@AyyLamar",
+      "alt": ""
     },
     {
       "src": "assets/thumbnails/jamsteo.png",
@@ -101,14 +111,14 @@
       "alt": "Minecraft thumbnail 9"
     },
     {
-      "src": "assets/thumbnails/Lynix 67 Night.png",
-      "label": "@Lynix",
-      "alt": "Minecraft thumbnail 10"
+      "src": "assets/thumbnails/grisly1.png",
+      "label": "",
+      "alt": ""
     },
     {
-      "src": "assets/thumbnails/freshi.png",
-      "label": "@Freshi",
-      "alt": "Minecraft thumbnail 12"
+      "src": "assets/thumbnails/al1.png",
+      "label": "@al1",
+      "alt": ""
     },
     {
       "src": "assets/thumbnails/zenith.png",
@@ -116,9 +126,9 @@
       "alt": "Minecraft thumbnail 17"
     },
     {
-      "src": "assets/thumbnails/snipers tn1.png",
-      "label": "@SnipersVoid",
-      "alt": "Minecraft thumbnail 11"
+      "src": "assets/thumbnails/freshi.png",
+      "label": "@Freshi",
+      "alt": "Minecraft thumbnail 12"
     },
     {
       "src": "assets/thumbnails/vivillypalpers.png",
@@ -126,9 +136,9 @@
       "alt": "Minecraft thumbnail 13"
     },
     {
-      "src": "assets/thumbnails/blocky.png",
-      "label": "@Blocky",
-      "alt": "Minecraft thumbnail 14"
+      "src": "assets/thumbnails/scarydude.png",
+      "label": "@Vivilly",
+      "alt": ""
     },
     {
       "src": "assets/thumbnails/AStrangeCreature.png",
@@ -136,29 +146,19 @@
       "alt": "Minecraft thumbnail 15"
     },
     {
-      "src": "assets/thumbnails/jamsteo 2nd v2thumbnail.png",
-      "label": "@Jamsteo",
-      "alt": "Minecraft thumbnail 16"
-    },
-    {
       "src": "assets/thumbnails/starthork2.png",
       "label": "@Starthork",
       "alt": ""
     },
     {
-      "src": "assets/thumbnails/vivilly robot tn v2.png",
-      "label": "@Vivilly",
-      "alt": "Minecraft thumbnail 18"
+      "src": "assets/thumbnails/jamsteo 2nd v2thumbnail.png",
+      "label": "@Jamsteo",
+      "alt": "Minecraft thumbnail 16"
     },
     {
-      "src": "assets/thumbnails/avoma.png",
-      "label": "@Avoma",
-      "alt": ""
-    },
-    {
-      "src": "assets/thumbnails/scarydude.png",
-      "label": "@Vivilly",
-      "alt": ""
+      "src": "assets/thumbnails/blocky.png",
+      "label": "@Blocky",
+      "alt": "Minecraft thumbnail 14"
     }
   ],
   "clients": [
