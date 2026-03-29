@@ -10,6 +10,11 @@
     "avatar": "assets/youtube/vixios.png"
   },
   {
+    "handle": "@SystemZee",
+    "subs": "1.8M Subs",
+    "avatar": "assets/youtube/systemzee.png"
+  },
+  {
     "handle": "@Flayming",
     "subs": "1.7M Subs",
     "avatar": "assets/youtube/flayming.png"
@@ -33,11 +38,6 @@
     "handle": "@lolFrosty",
     "subs": "1.6M Subs",
     "avatar": "assets/youtube/frosty.png"
-  },
-  {
-    "handle": "@SystemZee",
-    "subs": "1.8M Subs",
-    "avatar": "assets/youtube/systemzee.png"
   },
   {
     "handle": "@Sagi1",
