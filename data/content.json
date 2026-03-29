@@ -31,11 +31,6 @@
       "alt": ""
     },
     {
-      "src": "assets/thumbnails/mylespractice.png",
-      "label": "Practice",
-      "alt": ""
-    },
-    {
       "src": "assets/thumbnails/VivillyPoppy.png",
       "label": "@Vivilly",
       "alt": "Minecraft thumbnail 1"
@@ -61,19 +56,34 @@
       "alt": "Minecraft thumbnail 3"
     },
     {
-      "src": "assets/thumbnails/llama.png",
-      "label": "@Llama and Sticks",
-      "alt": "Minecraft thumbnail 4"
-    },
-    {
       "src": "assets/thumbnails/gold.png",
       "label": "@GoldActual",
       "alt": "Minecraft thumbnail 5"
     },
     {
+      "src": "assets/thumbnails/kitsniper.png",
+      "label": "@Kitsniper",
+      "alt": ""
+    },
+    {
+      "src": "assets/thumbnails/systemzee3.png",
+      "label": "@Systemzee",
+      "alt": ""
+    },
+    {
+      "src": "assets/thumbnails/llama.png",
+      "label": "@Llama and Sticks",
+      "alt": "Minecraft thumbnail 4"
+    },
+    {
       "src": "assets/thumbnails/vivillysmiler.png",
       "label": "@Vivilly",
       "alt": "Minecraft thumbnail 6"
+    },
+    {
+      "src": "assets/thumbnails/mylespractice.png",
+      "label": "Practice",
+      "alt": ""
     },
     {
       "src": "assets/thumbnails/dinosaur.png",
@@ -131,6 +141,11 @@
       "alt": "Minecraft thumbnail 16"
     },
     {
+      "src": "assets/thumbnails/starthork2.png",
+      "label": "@Starthork",
+      "alt": ""
+    },
+    {
       "src": "assets/thumbnails/vivilly robot tn v2.png",
       "label": "@Vivilly",
       "alt": "Minecraft thumbnail 18"
@@ -143,21 +158,6 @@
     {
       "src": "assets/thumbnails/scarydude.png",
       "label": "@Vivilly",
-      "alt": ""
-    },
-    {
-      "src": "assets/thumbnails/starthork2.png",
-      "label": "@Starthork",
-      "alt": ""
-    },
-    {
-      "src": "assets/thumbnails/systemzee3.png",
-      "label": "@Systemzee",
-      "alt": ""
-    },
-    {
-      "src": "assets/thumbnails/kitsniper.png",
-      "label": "@Kitsniper",
       "alt": ""
     }
   ],
