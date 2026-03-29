@@ -230,6 +230,16 @@ a { color: inherit; }
   gap: 14px;
 }
 
+.clients-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  align-items: stretch;
+}
+
+.clients-grid .item-card {
+  height: 100%;
+}
+
 .item-card {
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -344,4 +354,12 @@ code { background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 6px;
   .work-grid { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
   .card-toggle { grid-template-columns: 72px 1fr auto; }
   .drag-handle { justify-content: flex-start; }
+}
+
+@media (max-width: 900px) {
+  .clients-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 520px) {
+  .clients-grid { grid-template-columns: 1fr; }
 }

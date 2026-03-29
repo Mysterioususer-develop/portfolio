@@ -164,7 +164,7 @@
   "clients": [
     {
       "handle": "@Wisp",
-      "subs": "5.6M Subs",
+      "subs": "5.7M Subs",
       "avatar": "assets/youtube/wisp.png"
     },
     {
@@ -174,73 +174,93 @@
     },
     {
       "handle": "@Flayming",
-      "subs": "1.76M Subs",
+      "subs": "1.7M Subs",
       "avatar": "assets/youtube/flayming.png"
     },
     {
       "handle": "@Vivilly",
-      "subs": "1.5M Subs",
+      "subs": "1.7M Subs",
       "avatar": "assets/youtube/vivilly.png"
     },
     {
+      "handle": "@AxohMC",
+      "subs": "1.7M Subs",
+      "avatar": "assets/youtube/axohmc.png"
+    },
+    {
       "handle": "@Lynix",
-      "subs": "1.5M Subs",
+      "subs": "1.6M Subs",
       "avatar": "assets/youtube/lynix.png"
     },
     {
       "handle": "@lolFrosty",
-      "subs": "1.2M Subs",
+      "subs": "1.6M Subs",
       "avatar": "assets/youtube/frosty.png"
     },
     {
+      "handle": "@SystemZee",
+      "subs": "1.8M Subs",
+      "avatar": "assets/youtube/systemzee.png"
+    },
+    {
+      "handle": "@Sagi1",
+      "subs": "1.5M",
+      "avatar": "assets/youtube/sagi.png"
+    },
+    {
+      "handle": "@Midmysticx",
+      "subs": "1.2M Subs",
+      "avatar": "assets/youtube/midmystic.png"
+    },
+    {
+      "handle": "@al1",
+      "subs": "1.2M Subs",
+      "avatar": "assets/youtube/al1.png"
+    },
+    {
       "handle": "@ThatChiefGuy",
-      "subs": "650K Subs",
+      "subs": "785K Subs",
       "avatar": "assets/youtube/chiefguy.png"
     },
     {
-      "handle": "@AxohMC",
-      "subs": "550K Subs",
-      "avatar": "assets/youtube/axohmc.png"
-    },
-    {
       "handle": "@Baablu",
-      "subs": "500k Subs",
+      "subs": "745k Subs",
       "avatar": "assets/youtube/baablu.png"
     },
     {
       "handle": "@GoldActual",
-      "subs": "350K Subs",
+      "subs": "450K Subs",
       "avatar": "assets/youtube/goldactual.png"
     },
     {
       "handle": "@TrainerDario",
-      "subs": "300K Subs",
+      "subs": "350K Subs",
       "avatar": "assets/youtube/trainerdario.png"
     },
     {
+      "handle": "@Zenith",
+      "subs": "300K Subs",
+      "avatar": "assets/youtube/zenith.png"
+    },
+    {
       "handle": "@Jamsteo",
-      "subs": "126K Subs",
+      "subs": "160K Subs",
       "avatar": "assets/youtube/jamsteo.png"
     },
     {
-      "handle": "@Yuruze",
-      "subs": "100K Subs",
-      "avatar": "assets/youtube/yuruze.png"
+      "handle": "@Dewier",
+      "subs": "150K Subs",
+      "avatar": "assets/youtube/dewier.png"
     },
     {
-      "handle": "@RiceFarmer11",
-      "subs": "100k Subs",
-      "avatar": "assets/youtube/ricefarmer.png"
+      "handle": "@MintMC",
+      "subs": "136k Subs",
+      "avatar": "assets/youtube/mint.jpg"
     },
     {
       "handle": "@Jooonah",
-      "subs": "100K Subs",
+      "subs": "106K Subs",
       "avatar": "assets/youtube/jooonah.png"
-    },
-    {
-      "handle": "@Dewier",
-      "subs": "100K Subs",
-      "avatar": "assets/youtube/dewier.png"
     }
   ],
   "reviews": [
@@ -285,6 +305,18 @@
       "role": "Video Editor",
       "avatar": "assets/reviews/nothv2_pfp.png",
       "quote": "Such a lovely person to work with. Thumbnails are up to par and I would definitely recommend him to anyone!"
+    },
+    {
+      "name": "MintMC",
+      "role": "141K subs",
+      "avatar": "assets/reviews/mint.png",
+      "quote": "Larzy is an extremely talented thumbnail designer and always packages my content with as much effort as i put into the video itself, this has led to more people clicking on my videos and more people being introduced to my channel, he understands what a good thumbnail is and he adjusts it to any vision i have, would recommend working with him and i know i will be doing so in the future too."
+    },
+    {
+      "name": "Parallax",
+      "role": "16K subs",
+      "avatar": "assets/reviews/parallax.png",
+      "quote": "Larzy cooked with the thumbnail. Easy to work with, great price for the quality and executed the concept well. Definitely working with again"
     }
   ]
 }

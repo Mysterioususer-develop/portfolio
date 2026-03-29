@@ -36,6 +36,7 @@
       work: document.getElementById('add-work'),
       workRow: document.getElementById('add-work-row'),
       client: document.getElementById('add-client'),
+      clientRow: document.getElementById('add-client-row'),
       review: document.getElementById('add-review'),
       about: document.getElementById('add-about')
     }
@@ -399,26 +400,73 @@
 
   function handleAdd(id) {
     ensureContent();
-    const map = {
-      'add-work': () => ({ src: '', label: '', alt: '' }),
-      'add-work-row': () => ({ src: '', label: '', alt: '' }),
-      'add-client': () => ({ handle: '', subs: '', avatar: '' }),
-      'add-review': () => ({ name: '', role: '', avatar: '', quote: '' }),
-      'add-about': () => ({ title: '', body: '' })
+    const actions = {
+      'add-work': {
+        type: 'work',
+        add: () => state.content.work.push({ src: '', label: '', alt: '' }),
+        container: () => els.workList,
+        focus: (card) => card?.querySelector('input[data-field="label"]')?.focus()
+      },
+      'add-work-row': {
+        type: 'work',
+        add: () => state.content.work.push(
+          { src: '', label: '', alt: '' },
+          { src: '', label: '', alt: '' },
+          { src: '', label: '', alt: '' }
+        ),
+        container: () => els.workList,
+        focus: (card) => card?.querySelector('input[data-field="label"]')?.focus()
+      },
+      // NOTE: content arrays are plural ("clients", "reviews"). Button ids are singular.
+      'add-client': {
+        type: 'clients',
+        add: () => state.content.clients.push({ handle: '', subs: '', avatar: '' }),
+        container: () => els.clientsList,
+        focus: (card) => card?.querySelector('input[data-field="handle"]')?.focus()
+      },
+      'add-client-row': {
+        type: 'clients',
+        add: () => state.content.clients.push(
+          { handle: '', subs: '', avatar: '' },
+          { handle: '', subs: '', avatar: '' },
+          { handle: '', subs: '', avatar: '' },
+          { handle: '', subs: '', avatar: '' }
+        ),
+        container: () => els.clientsList,
+        focus: (card) => card?.querySelector('input[data-field="handle"]')?.focus()
+      },
+      'add-review': {
+        type: 'reviews',
+        add: () => state.content.reviews.push({ name: '', role: '', avatar: '', quote: '' }),
+        container: () => els.reviewsList,
+        focus: (card) => card?.querySelector('input[data-field="name"]')?.focus()
+      },
+      'add-about': {
+        type: 'about',
+        add: () => state.content.about.sections.push({ title: '', body: '' }),
+        container: () => els.aboutList,
+        focus: (card) => card?.querySelector('input[data-field="title"]')?.focus()
+      }
     };
-    const key = id.replace('add-', '');
-    const builder = map[id];
-    if (!builder) return;
-    if (id === 'add-work-row') {
-      state.content.work.push(builder(), builder(), builder());
-    } else if (key === 'about') {
-      state.content.about.sections.push(builder());
-    } else {
-      state.content[key].push(builder());
+
+    const action = actions[id];
+    if (!action) return;
+
+    const list = action.type === 'about' ? state.content.about.sections : state.content[action.type];
+    const startIdx = Array.isArray(list) ? list.length : 0;
+
+    action.add();
+    const container = action.container();
+    renderList(action.type, container);
+
+    // Scroll/focus the newly-added card (nice UX for larger lists).
+    const newIdx = Array.isArray(list) ? startIdx : -1;
+    if (container && newIdx >= 0) {
+      const card = container.querySelector(`.item-card[data-index="${newIdx}"]`);
+      card?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // Let the browser apply layout after scroll before focusing.
+      setTimeout(() => action.focus?.(card), 0);
     }
-    const containerId = key === 'work-row' ? 'work-list' : `${key}-list`;
-    const container = document.getElementById(containerId);
-    renderList(key === 'work-row' ? 'work' : key, container);
   }
 
   function makeSortable(type, el) {
