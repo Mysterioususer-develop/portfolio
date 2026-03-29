@@ -42,17 +42,17 @@
     },
     {
       "src": "assets/thumbnails/sagi1.png",
-      "label": "",
+      "label": "@Sagi",
       "alt": ""
     },
     {
-      "src": "assets/thumbnails/systemzee1.png",
-      "label": "",
+      "src": "assets/thumbnails/syszee.png",
+      "label": "@Systemzee",
       "alt": ""
     },
     {
       "src": "assets/thumbnails/MIDMYSTIC.png",
-      "label": "",
+      "label": "@Midmysticx",
       "alt": ""
     },
     {
@@ -147,17 +147,17 @@
     },
     {
       "src": "assets/thumbnails/starthork2.png",
-      "label": "",
+      "label": "@Starthork",
       "alt": ""
     },
     {
       "src": "assets/thumbnails/systemzee3.png",
-      "label": "",
+      "label": "@Systemzee",
       "alt": ""
     },
     {
       "src": "assets/thumbnails/kitsniper.png",
-      "label": "",
+      "label": "@Kitsniper",
       "alt": ""
     }
   ],
