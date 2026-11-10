@@ -33,19 +33,21 @@
   ];
   const contactFields = [
     ['Project popup title', 'contact.dialogTitle'], ['Project popup introduction', 'contact.dialogIntro', 'long'],
-    ['Discord handle', 'contact.discord'], ['X profile URL', 'contact.xUrl'], ['Brand logo path', 'brand.logo', 'image']
+    ['Discord profile URL', 'contact.discordUrl'], ['X profile URL', 'contact.xUrl'], ['Brand logo path', 'brand.logo', 'image']
   ];
 
   function markDirty() { state.dirty = true; $('#save-state').textContent = 'Unsaved changes'; $('#save-state').classList.add('dirty'); }
   function markSaved() { state.dirty = false; $('#save-state').textContent = 'All changes saved'; $('#save-state').classList.remove('dirty'); }
   function toast(message, error = false) {
     const el = $('#toast'); el.textContent = message; el.classList.toggle('error-toast', error); el.classList.add('show');
-    clearTimeout(toast.timer); toast.timer = setTimeout(() => el.classList.remove('show'), 5000);
+    clearTimeout(toast.timer); toast.timer = setTimeout(() => el.classList.remove('show'), error ? 12000 : 7000);
   }
   async function request(url, options = {}) {
     const headers = { ...(options.headers || {}) };
     if (state.token) headers.Authorization = `Bearer ${state.token}`;
-    const response = await fetch(url, { ...options, headers });
+    let response;
+    try { response = await fetch(url, { ...options, headers }); }
+    catch { throw new Error('The local editor is offline. Start it with start-admin.bat, then reload this page.'); }
     const data = await response.json().catch(() => ({}));
     if (response.status === 401 && url !== '/api/login') signOut();
     if (!response.ok) throw new Error(data.error || `Request failed (${response.status}).`);
@@ -169,14 +171,16 @@
     const problem = validate(); if (problem) { toast(problem, true); return false; }
     try {
       await request('/api/save', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content: state.content }) });
-      markSaved(); toast('Saved to data/content.json. Refresh the preview to see it.'); return true;
-    } catch (error) { toast(error.message, true); return false; }
+      markSaved();
+      if ('BroadcastChannel' in window) { const channel = new BroadcastChannel('larzy-preview'); channel.postMessage('content-saved'); channel.close(); }
+      toast('Saved on this computer. The local preview will refresh; click Publish to update the live site.'); return true;
+    } catch (error) { $('#save-state').textContent = 'Local save failed'; toast(error.message, true); return false; }
   }
   async function publish() {
     if (state.dirty && !(await save())) return;
     $('#btn-publish').disabled = true; $('#save-state').textContent = 'Publishing…';
-    try { const result = await request('/api/publish', { method: 'POST' }); toast(result.message); $('#save-state').textContent = 'Published to GitHub'; }
-    catch (error) { toast(error.message, true); $('#save-state').textContent = 'Publish needs attention'; }
+    try { const result = await request('/api/publish', { method: 'POST' }); toast(result.message); $('#save-state').textContent = result.pushed ? 'Pushed to GitHub — Vercel deploying' : 'GitHub is up to date'; }
+    catch (error) { toast(error.message, true); $('#save-state').textContent = 'Publish failed — see message'; }
     finally { $('#btn-publish').disabled = false; }
   }
 
@@ -222,5 +226,5 @@
     }
   });
   window.addEventListener('beforeunload', event => { if (state.dirty) { event.preventDefault(); event.returnValue = ''; } });
-  if (state.token) load().catch(() => signOut());
+  if (state.token) load().catch(error => { signOut(); $('#login-error').textContent = error.message; });
 })();

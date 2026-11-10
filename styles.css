@@ -178,6 +178,7 @@ body[data-page="home"] .work-card .work-open{aspect-ratio:16/9}
 .project-dialog .form-grid{margin-top:22px;gap:14px}
 .project-dialog .form-actions{display:flex}
 .project-dialog .form-status{color:#dfc9e1}
+.brief-honeypot{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%)!important;white-space:nowrap!important}
 .dialog-contact{display:flex;align-items:center;gap:15px;flex-wrap:wrap;margin-top:25px;padding-top:18px;border-top:1px solid #765e83;font-size:13px}
 .dialog-contact span{color:var(--muted)}
 .dialog-contact button,.dialog-contact a{border:1px solid #765e83;border-radius:999px;background:none;color:var(--text);padding:8px 12px}

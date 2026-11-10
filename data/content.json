@@ -107,8 +107,8 @@
   },
   "contact": {
     "dialogTitle": "Start a project.",
-    "dialogIntro": "Tell me about your channel and what you're making. Copy the brief, then send it to me on Discord.",
-    "discord": "larzyfx",
+    "dialogIntro": "Tell me about your channel and what you're making. I'll email your brief when you submit.",
+    "discordUrl": "https://discordapp.com/users/1025435990506090548",
     "xUrl": "https://x.com/larzyfx"
   },
   "brand": {

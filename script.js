@@ -1,6 +1,10 @@
 /* Shared, progressively enhanced interactions for Larzy's portfolio. */
 document.documentElement.classList.add('js');
 document.addEventListener('DOMContentLoaded', async () => {
+  if ('BroadcastChannel' in window && /^(?:localhost|127\.0\.0\.1)$/.test(location.hostname)) {
+    const previewChannel = new BroadcastChannel('larzy-preview');
+    previewChannel.onmessage = event => { if (event.data === 'content-saved') location.reload(); };
+  }
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
   document.querySelectorAll('[data-year]').forEach(el => { el.textContent = new Date().getFullYear(); });
 
@@ -22,17 +26,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   projectDialog.setAttribute('aria-labelledby', 'project-title');
   projectDialog.innerHTML = `
     <div class="project-dialog-head"><div><p class="eyebrow">Let's collaborate</p><h2 id="project-title">Start a project<span class="accent">.</span></h2></div><button class="dialog-close" type="button" aria-label="Close project brief">×</button></div>
-    <p class="dialog-intro">Tell me about your channel and what you're making. Copy the brief, then send it to me on Discord.</p>
+    <p class="dialog-intro">Tell me about your channel and what you're making. I'll email your brief when you submit.</p>
     <form id="brief-form" class="form-grid">
       <div class="field"><label for="channel">YouTube channel <span aria-hidden="true">*</span></label><input id="channel" name="channel" placeholder="Channel name or URL" required maxlength="160"></div>
       <div class="field"><label for="channel-size">Channel size <span aria-hidden="true">*</span></label><select id="channel-size" name="channelSize" required><option value="">Select a range</option><option>Under 10K subscribers</option><option>10K–100K subscribers</option><option>100K–1M subscribers</option><option>1M+ subscribers</option></select></div>
       <div class="field"><label for="handle">Discord or X handle <span aria-hidden="true">*</span></label><input id="handle" name="handle" placeholder="@yourhandle" required maxlength="80"></div>
       <div class="field"><label for="deadline">Deadline</label><input id="deadline" name="deadline" placeholder="When do you need it?" maxlength="80"></div>
       <div class="field span-2"><label for="details">Project details <span aria-hidden="true">*</span></label><textarea id="details" name="details" rows="4" placeholder="Video idea, style, references, and anything else I should know…" required maxlength="3000"></textarea></div>
-      <div class="form-actions"><button class="button button-light" type="submit">Copy project brief ↗</button><button class="text-link reset-button" type="reset">Clear form</button></div>
-      <p class="form-status span-2" id="form-status" role="status" aria-live="polite">Your details stay in your browser until you send the brief.</p>
+      <div class="field brief-honeypot" aria-hidden="true"><label for="brief-website">Website</label><input id="brief-website" name="website" tabindex="-1" autocomplete="off"></div>
+      <div class="form-actions"><button class="button button-light" type="submit">Submit project brief ↗</button><button class="text-link reset-button" type="reset">Clear form</button></div>
+      <p class="form-status span-2" id="form-status" role="status" aria-live="polite">Your brief will be emailed to Larzy when you submit.</p>
     </form>
-    <div class="dialog-contact"><span>Send the copied brief to</span><button id="copy-discord" type="button">Discord <strong>larzyfx</strong> ↗</button><a href="https://x.com/larzyfx" target="_blank" rel="noopener noreferrer">X @larzyfx ↗</a></div>`;
+    <div class="dialog-contact"><span>Or reach out directly:</span><a id="discord-contact" href="https://discordapp.com/users/1025435990506090548" target="_blank" rel="noopener noreferrer">Discord ↗</a><a href="https://x.com/larzyfx" target="_blank" rel="noopener noreferrer">X @larzyfx ↗</a></div>`;
   document.body.append(projectDialog);
   const openProject = () => { closeMenu(); if (!projectDialog.open) projectDialog.showModal(); projectDialog.querySelector('#channel').focus(); };
   document.querySelectorAll('a[href="contact.html"]').forEach(link => link.addEventListener('click', event => { event.preventDefault(); openProject(); }));
@@ -70,7 +75,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   let content;
   try {
-    const response = await fetch('data/content.json');
+    const response = await fetch('data/content.json', { cache: 'no-store' });
     if (!response.ok) throw new Error('Content unavailable');
     content = await response.json();
   } catch (_) { content = null; }
@@ -148,11 +153,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       title.replaceChildren(document.createTextNode(contact.dialogTitle.replace(/\.$/, '')), dot);
     }
     setText('.dialog-intro', contact.dialogIntro);
-    const discord = contact.discord || 'larzyfx';
-    const discordLabel = projectDialog.querySelector('#copy-discord strong'); if (discordLabel) discordLabel.textContent = discord;
+    const discordUrl = /^https:\/\/(?:discordapp|discord)\.com\/users\/\d+\/?$/.test(contact.discordUrl || '') ? contact.discordUrl : 'https://discordapp.com/users/1025435990506090548';
+    projectDialog.querySelector('#discord-contact').href = discordUrl;
     const xUrl = /^https:\/\/x\.com\/[\w]+\/?$/.test(contact.xUrl || '') ? contact.xUrl : 'https://x.com/larzyfx';
     document.querySelectorAll('a[href="https://x.com/larzyfx"]').forEach(a => { a.href = xUrl; });
-    const xContact = projectDialog.querySelector('.dialog-contact a');
+    const xContact = projectDialog.querySelector('.dialog-contact a[href^="https://x.com/"]');
     if (xContact) xContact.textContent = `X @${xUrl.split('/').filter(Boolean).at(-1)} ↗`;
     const logo = assetPath(data.brand?.logo);
     if (logo) { document.querySelectorAll('.brand img').forEach(img => { img.src = logo; }); const icon = document.querySelector('link[rel="icon"]'); if (icon) icon.href = logo; }
@@ -286,19 +291,22 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   const status = document.getElementById('form-status');
-  const writeClipboard = async text => { await navigator.clipboard.writeText(text); };
-  document.getElementById('copy-discord')?.addEventListener('click', async event => {
-    const discord = content?.contact?.discord || 'larzyfx';
-    try { await writeClipboard(discord); event.currentTarget.querySelector('strong').textContent = 'Copied!'; setTimeout(() => { event.currentTarget.querySelector('strong').textContent = discord; }, 1600); }
-    catch (_) { if (status) status.textContent = `Discord handle: ${discord}`; }
-  });
   const form = document.getElementById('brief-form');
   form?.addEventListener('submit', async event => {
     event.preventDefault(); if (!form.reportValidity()) return;
-    const values = new FormData(form);
-    const brief = `New Project Inquiry\nYouTube Channel: ${String(values.get('channel')).trim()}\nChannel Size: ${values.get('channelSize')}\nHandle: ${String(values.get('handle')).trim()}\nDeadline: ${values.get('deadline') || 'To discuss'}\nDetails: ${String(values.get('details')).trim()}`;
-    try { await writeClipboard(brief); status.textContent = `Brief copied. Paste it into a Discord DM to ${content?.contact?.discord || 'larzyfx'}.`; }
-    catch (_) { status.textContent = 'Clipboard unavailable. Select and copy your brief below.'; const output = document.createElement('textarea'); output.className = 'span-2'; output.value = brief; output.setAttribute('aria-label', 'Your project brief'); output.rows = 10; form.append(output); output.focus(); output.select(); }
+    const submitButton = form.querySelector('button[type="submit"]');
+    const values = Object.fromEntries(new FormData(form));
+    submitButton.disabled = true;
+    status.textContent = 'Sending your brief…';
+    try {
+      const response = await fetch('/api/brief', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(values) });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || 'Your brief could not be sent. Please try again.');
+      form.reset();
+      status.textContent = 'Thanks — your brief was sent. I’ll be in touch using the handle you provided.';
+    } catch (error) {
+      status.textContent = error instanceof TypeError ? 'Could not reach the form service. Please try again or use Discord or X below.' : error.message;
+    } finally { submitButton.disabled = false; }
   });
-  form?.addEventListener('reset', () => { if (status) status.textContent = `After copying, paste your brief into a Discord DM to ${content?.contact?.discord || 'larzyfx'}.`; form.querySelector('textarea[aria-label="Your project brief"]')?.remove(); });
+  form?.querySelector('button[type="reset"]')?.addEventListener('click', () => { status.textContent = 'Your brief will be emailed to Larzy when you submit.'; });
 });

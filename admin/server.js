@@ -58,6 +58,22 @@ function validContent(data) {
   return true;
 }
 
+app.post('/api/brief', async (req, res) => {
+  try {
+    const { POST } = await import('../api/brief.mjs');
+    const request = new Request(`http://127.0.0.1:${port}/api/brief`, {
+      method: 'POST',
+      headers: { 'Content-Type': req.get('Content-Type') || 'application/json' },
+      body: JSON.stringify(req.body)
+    });
+    const response = await POST(request);
+    res.status(response.status).type('json').send(await response.text());
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Could not send the brief. Please use Discord or X below.' });
+  }
+});
+
 app.post('/api/login', (req, res) => {
   const attempt = Buffer.from(String(req.body?.password || ''));
   const expected = Buffer.from(password);
@@ -100,11 +116,12 @@ app.post('/api/publish', authenticate, async (_req, res) => {
     await git('add', '-A', '--', 'data/content.json', 'assets/uploads');
     const changed = await git('diff', '--cached', '--name-only', '--', 'data/content.json', 'assets/uploads');
     if (changed) await git('commit', '-m', 'Update portfolio content', '--only', '--', 'data/content.json', 'assets/uploads');
+    const pending = Number(await git('rev-list', '--count', 'origin/main..main'));
     try {
       await git('push', 'origin', 'main');
-      res.json({ ok: true, message: changed ? 'Pushed to GitHub. Vercel will update the site after deployment finishes.' : 'GitHub is up to date. There are no new content changes to publish.' });
+      res.json({ ok: true, pushed: pending > 0, message: pending > 0 ? 'Pushed to GitHub. Vercel is deploying; refresh the domain after the deployment is Ready.' : 'There are no new changes to publish. GitHub is already up to date.' });
     } catch (error) {
-      res.status(502).json({ error: `Saved in a local Git commit, but the push failed: ${error.message}. Run git push origin main after fixing access.` });
+      res.status(502).json({ error: `GitHub push failed: ${error.message}. Your saved changes remain on this computer; click Publish again after fixing Git access.` });
     }
   } catch (error) { console.error(error); res.status(500).json({ error: `Publishing failed: ${error.message}` }); }
 });
