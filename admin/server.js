@@ -1,202 +1,131 @@
+// Local editing server. Do not deploy this process to the public website.
 const path = require('path');
 const fs = require('fs/promises');
+const crypto = require('crypto');
+const { execFile } = require('child_process');
 const express = require('express');
 const multer = require('multer');
-const crypto = require('crypto');
-const { exec } = require('child_process');
 
+const root = path.resolve(__dirname, '..');
+const contentPath = path.join(root, 'data', 'content.json');
+const uploadsPath = path.join(root, 'assets', 'uploads');
+const password = process.env.ADMIN_PASSWORD;
+const port = Number(process.env.PORT) || 3000;
+const publishEnabled = process.env.ENABLE_GIT_PUBLISH !== 'false';
+const sessions = new Map();
 const app = express();
-const PORT = process.env.PORT || 3000;
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'hello';
 
-const ROOT = path.resolve(__dirname, '..');
-const DATA_DIR = path.join(ROOT, 'data');
-const CONTENT_PATH = path.join(DATA_DIR, 'content.json');
-const CLIENTS_PATH = path.join(ROOT, 'clients.json');
-const UPLOAD_DIR = path.join(__dirname, 'uploads');
-const TOKEN_TTL_MS = 1000 * 60 * 60 * 12; // 12 hours
-const tokens = new Map(); // token -> expiresAt
+if (!password || password.length < 12) {
+  console.error('Set ADMIN_PASSWORD to a unique password of at least 12 characters before starting the admin server.');
+  process.exit(1);
+}
 
+app.disable('x-powered-by');
 app.use(express.json({ limit: '2mb' }));
-app.use('/admin', express.static(__dirname));
-app.use('/uploads', express.static(UPLOAD_DIR));
-app.use(express.static(ROOT));
+app.use('/api', (_req, res, next) => { res.set('Cache-Control', 'no-store'); next(); });
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, UPLOAD_DIR),
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname || '').toLowerCase() || '.png';
-    const name = crypto.randomBytes(8).toString('hex');
-    cb(null, `${name}${ext}`);
-  }
+function authenticate(req, res, next) {
+  const token = (req.get('Authorization') || '').replace(/^Bearer /, '');
+  const expires = sessions.get(token);
+  if (!expires || expires < Date.now()) return res.status(401).json({ error: 'Sign in again.' });
+  sessions.set(token, Date.now() + 12 * 60 * 60 * 1000);
+  next();
+}
+
+function git(...args) {
+  return new Promise((resolve, reject) => execFile('git', args, { cwd: root, windowsHide: true }, (error, stdout, stderr) => {
+    if (error) reject(new Error((stderr || error.message).trim()));
+    else resolve(stdout.trim());
+  }));
+}
+
+function imageExtension(buffer) {
+  if (buffer.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))) return '.png';
+  if (buffer.subarray(0, 3).equals(Buffer.from([255, 216, 255]))) return '.jpg';
+  if (buffer.toString('ascii', 0, 4) === 'RIFF' && buffer.toString('ascii', 8, 12) === 'WEBP') return '.webp';
+  return null;
+}
+
+function validText(value, limit = 4000) { return typeof value === 'string' && value.length <= limit; }
+function validImage(value) { return validText(value, 500) && (!value || (/^assets\/[\w./% -]+$/i.test(value) && !value.split('/').includes('..')) || /^https:\/\/[^\s]+$/i.test(value)); }
+function validContent(data) {
+  if (!data || typeof data !== 'object' || Array.isArray(data)) return false;
+  if (!Array.isArray(data.work) || data.work.length > 150 || !data.work.every(x => validText(x.label, 160) && validText(x.alt, 300) && validImage(x.src))) return false;
+  if (!Array.isArray(data.clients) || data.clients.length > 150 || !data.clients.every(x => validText(x.handle, 160) && validText(x.subs, 100) && validImage(x.avatar))) return false;
+  if (!Array.isArray(data.reviews) || data.reviews.length > 150 || !data.reviews.every(x => validText(x.name, 160) && validText(x.role, 160) && validText(x.quote, 4000) && validImage(x.avatar))) return false;
+  if (!data.home || !Array.isArray(data.home.heroImages) || data.home.heroImages.length > 30 || new Set(data.home.heroImages).size !== data.home.heroImages.length || !data.home.heroImages.every(validImage)) return false;
+  if (!Array.isArray(data.home.process) || data.home.process.length > 12 || !data.home.process.every(x => validText(x.label, 160) && validText(x.title, 160) && validText(x.body) && validText(x.alt, 300) && validImage(x.image))) return false;
+  if (!data.about || !Array.isArray(data.about.sections)) return false;
+  return true;
+}
+
+app.post('/api/login', (req, res) => {
+  const attempt = Buffer.from(String(req.body?.password || ''));
+  const expected = Buffer.from(password);
+  if (attempt.length !== expected.length || !crypto.timingSafeEqual(attempt, expected)) return res.status(401).json({ error: 'Incorrect password.' });
+  const token = crypto.randomBytes(32).toString('hex');
+  sessions.set(token, Date.now() + 12 * 60 * 60 * 1000);
+  res.json({ token });
 });
 
-const upload = multer({
-  storage,
-  limits: { fileSize: 8 * 1024 * 1024 },
-  fileFilter: (req, file, cb) => {
-    if (!file || !file.mimetype) return cb(new Error('Invalid file'));
-    if (/image\/(png|jpe?g)/i.test(file.mimetype)) return cb(null, true);
-    cb(new Error('Only PNG and JPG are allowed'));
-  }
+app.get('/api/content', authenticate, async (_req, res) => {
+  try { res.json({ content: JSON.parse(await fs.readFile(contentPath, 'utf8')), publishEnabled }); }
+  catch (error) { console.error(error); res.status(500).json({ error: 'Could not read site content.' }); }
 });
 
-async function ensureDirs() {
-  await fs.mkdir(DATA_DIR, { recursive: true });
-  await fs.mkdir(UPLOAD_DIR, { recursive: true });
-}
-
-function cleanTokens() {
-  const now = Date.now();
-  for (const [tok, expires] of tokens.entries()) {
-    if (expires < now) tokens.delete(tok);
-  }
-}
-
-function createToken() {
-  const token = crypto.randomBytes(20).toString('hex');
-  tokens.set(token, Date.now() + TOKEN_TTL_MS);
-  return token;
-}
-
-function requireAuth(req, res, next) {
-  cleanTokens();
-  const header = req.headers.authorization || '';
-  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
-  if (token && tokens.has(token) && tokens.get(token) > Date.now()) {
-    tokens.set(token, Date.now() + TOKEN_TTL_MS);
-    return next();
-  }
-  return res.status(401).json({ error: 'Unauthorized' });
-}
-
-async function readJson(file, fallback) {
+app.post('/api/save', authenticate, async (req, res) => {
+  if (!validContent(req.body?.content)) return res.status(400).json({ error: 'Some content is invalid. Check image paths and required fields.' });
   try {
-    const txt = await fs.readFile(file, 'utf8');
-    return JSON.parse(txt);
-  } catch (err) {
-    if (err.code === 'ENOENT' && typeof fallback !== 'undefined') return fallback;
-    throw err;
-  }
-}
-
-async function writeJson(file, data) {
-  await fs.writeFile(file, JSON.stringify(data, null, 2), 'utf8');
-}
-
-function execAsync(cmd) {
-  return new Promise((resolve, reject) => {
-    exec(cmd, { cwd: ROOT }, (err, stdout, stderr) => {
-      if (err) return reject({ err, stderr: (stderr || err.message || '').trim() });
-      resolve({ stdout: stdout || '', stderr: stderr || '' });
-    });
-  });
-}
-
-app.post('/api/login', async (req, res) => {
-  const { password } = req.body || {};
-  if (!password || password !== ADMIN_PASSWORD) {
-    return res.status(401).json({ error: 'Invalid password' });
-  }
-  const token = createToken();
-  return res.json({ token, expiresIn: TOKEN_TTL_MS });
+    await fs.writeFile(contentPath, `${JSON.stringify(req.body.content, null, 2)}\n`, 'utf8');
+    res.json({ ok: true });
+  } catch (error) { console.error(error); res.status(500).json({ error: 'Could not save content.' }); }
 });
 
-app.get('/api/content', async (req, res) => {
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
+app.post('/api/upload', authenticate, upload.single('file'), async (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'Choose an image to upload.' });
+  const ext = imageExtension(req.file.buffer);
+  if (!ext) return res.status(400).json({ error: 'Use a PNG, JPG, or WebP image.' });
   try {
-    await ensureDirs();
-    const content = await readJson(CONTENT_PATH, { work: [], clients: [], reviews: [], home: {}, about: { sections: [] } });
-    if (!Array.isArray(content.clients) || content.clients.length === 0) {
-      const fallbackClients = await readJson(CLIENTS_PATH, []);
-      if (Array.isArray(fallbackClients)) content.clients = fallbackClients;
-    }
-    return res.json({ content, clients: content.clients || [] });
-  } catch (err) {
-    console.error('Failed to read content', err);
-    return res.status(500).json({ error: 'Failed to load content' });
-  }
+    await fs.mkdir(uploadsPath, { recursive: true });
+    const filename = `${crypto.randomBytes(12).toString('hex')}${ext}`;
+    await fs.writeFile(path.join(uploadsPath, filename), req.file.buffer, { flag: 'wx' });
+    res.json({ path: `assets/uploads/${filename}` });
+  } catch (error) { console.error(error); res.status(500).json({ error: 'Could not store image.' }); }
 });
 
-app.post('/api/save', requireAuth, async (req, res) => {
+app.post('/api/publish', authenticate, async (_req, res) => {
+  if (!publishEnabled) return res.status(403).json({ error: 'Git publishing is off. Start the editor without ENABLE_GIT_PUBLISH=false to enable it.' });
   try {
-    await ensureDirs();
-    const payload = req.body || {};
-    const content = payload.content || {};
-    const clients = payload.clients || content.clients || [];
-
-    // Basic validation
-    content.work = Array.isArray(content.work) ? content.work : [];
-    content.clients = Array.isArray(content.clients) ? content.clients : clients;
-    content.reviews = Array.isArray(content.reviews) ? content.reviews : [];
-    if (!content.home) content.home = {};
-    if (!content.about) content.about = { sections: [] };
-    if (!Array.isArray(content.about.sections)) content.about.sections = [];
-
-    await writeJson(CONTENT_PATH, content);
-    await writeJson(CLIENTS_PATH, Array.isArray(clients) ? clients : []);
-    return res.json({ ok: true });
-  } catch (err) {
-    console.error('Failed to save content', err);
-    return res.status(500).json({ error: 'Failed to save content' });
-  }
-});
-
-app.post('/api/upload', requireAuth, (req, res) => {
-  upload.single('file')(req, res, (err) => {
-    if (err || !req.file) {
-      return res.status(400).json({ error: err?.message || 'Upload failed' });
-    }
-    const relativePath = path.join('uploads', path.basename(req.file.filename)).replace(/\\/g, '/');
-    return res.json({ ok: true, path: relativePath });
-  });
-});
-
-app.post('/api/publish', requireAuth, async (req, res) => {
-  const enableEnv = process.env.ENABLE_GIT_PUBLISH;
-  const runGit = (typeof enableEnv === 'undefined') ? true : enableEnv === 'true';
-  if (!runGit) return res.json({ ok: true, message: 'Publish hook is disabled. Set ENABLE_GIT_PUBLISH=true to enable.' });
-
-  try {
-    const commitMsg = (req.body && req.body.message) || 'Update content';
-    const safeMsg = commitMsg.replace(/"/g, '\\"');
-
-    // Detect branch
-    let branch = 'main';
+    const branch = await git('branch', '--show-current');
+    if (branch !== 'main') return res.status(409).json({ error: `Switch to main before publishing. Current branch: ${branch || '(detached)'}.` });
+    await git('add', '-A', '--', 'data/content.json', 'assets/uploads');
+    const changed = await git('diff', '--cached', '--name-only', '--', 'data/content.json', 'assets/uploads');
+    if (!changed) return res.json({ ok: true, message: 'No saved content changes to publish.' });
+    await git('commit', '-m', 'Update portfolio content', '--only', '--', 'data/content.json', 'assets/uploads');
     try {
-      const { stdout } = await execAsync('git rev-parse --abbrev-ref HEAD');
-      branch = stdout.trim() || branch;
-    } catch (_) { /* fallback to main */ }
-
-    // Only commit/push if there are changes
-    const { stdout: statusOut } = await execAsync('git status --porcelain');
-    if (!statusOut.trim()) {
-      return res.json({ ok: true, message: 'No changes to publish' });
+      await git('push', 'origin', 'main');
+      res.json({ ok: true, message: 'Pushed to GitHub. The Pages workflow will update the website after it finishes.' });
+    } catch (error) {
+      res.status(502).json({ error: `Saved in a local Git commit, but the push failed: ${error.message}. Run git push origin main after fixing access.` });
     }
-
-    await execAsync('git add .');
-    await execAsync(`git commit -m "${safeMsg}"`);
-
-    let needsUpstream = false;
-    try {
-      await execAsync('git rev-parse --abbrev-ref --symbolic-full-name @{upstream}');
-    } catch (_) {
-      needsUpstream = true;
-    }
-    const pushCmd = needsUpstream ? `git push -u origin ${branch}` : 'git push';
-    const { stdout } = await execAsync(pushCmd);
-    return res.json({ ok: true, output: stdout || 'Publish complete' });
-  } catch (e) {
-    const details = e?.stderr || e?.err?.message || String(e);
-    console.error('Git publish failed', details);
-    return res.status(500).json({ error: 'Git publish failed', details });
-  }
+  } catch (error) { console.error(error); res.status(500).json({ error: `Publishing failed: ${error.message}` }); }
 });
 
-app.use((req, res) => res.status(404).json({ error: 'Not found' }));
+// Serve only the editor and the public site's files. Never expose server source or node_modules.
+app.get(['/admin', '/admin/'], (_req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
+app.get('/admin/admin.css', (_req, res) => res.sendFile(path.join(__dirname, 'admin.css')));
+app.get('/admin/admin.js', (_req, res) => res.sendFile(path.join(__dirname, 'admin.js')));
+app.use('/assets', express.static(path.join(root, 'assets')));
+app.use('/data', express.static(path.join(root, 'data')));
+app.get('/', (_req, res) => res.sendFile(path.join(root, 'index.html')));
+for (const name of ['index.html', 'portfolio.html', 'about.html', 'contact.html', 'styles.css', 'script.js']) {
+  app.get(`/${name}`, (_req, res) => res.sendFile(path.join(root, name)));
+}
+app.use((error, _req, res, next) => {
+  if (error instanceof multer.MulterError) return res.status(400).json({ error: error.message });
+  next(error);
+});
+app.use((_req, res) => res.status(404).send('Not found'));
 
-ensureDirs()
-  .then(() => app.listen(PORT, () => console.log(`Admin server running at http://localhost:${PORT}`)))
-  .catch((err) => {
-    console.error('Failed to start server', err);
-    process.exit(1);
-  });
+app.listen(port, '127.0.0.1', () => console.log(`Local admin: http://127.0.0.1:${port}/admin`));

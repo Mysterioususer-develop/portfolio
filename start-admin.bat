@@ -1,5 +1,3 @@
 @echo off
-setlocal
-cd /d C:\Users\rk\Desktop\portfolio
-if not exist node_modules (npm install)
-node admin\server.js
+cd /d "%~dp0"
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0admin\start.ps1"

@@ -2,13 +2,133 @@
   "home": {
     "heroTag": "Minecraft Thumbnail Artist",
     "heroTitleLine1": "Thumbnails",
-    "heroTitleLine2": "That Attract Viewers",
+    "heroTitleLine2": "That",
+    "heroTitleAccent": "Attract",
+    "heroTitleLine3": "Viewers",
     "heroDescription": "Hey, I'm larzy, a Minecraft Thumbnail designer with over 2 years of experience in the field. Each thumbnail I create is directed towards your audience to ensure maximum clicks.",
     "primaryCta": "View Work",
-    "secondaryCta": "Commission Now"
+    "secondaryCta": "Start a project",
+    "heroImages": [
+      "assets/thumbnails/freshi4-min.png",
+      "assets/thumbnails/systemzee3.png",
+      "assets/thumbnails/VivillyPoppy.png",
+      "assets/thumbnails/sagi1.png",
+      "assets/thumbnails/syszee.png",
+      "assets/thumbnails/MIDMYSTIC.png",
+      "assets/thumbnails/wisp.png",
+      "assets/thumbnails/gold.png",
+      "assets/thumbnails/kitsniper.png",
+      "assets/thumbnails/llama.png",
+      "assets/thumbnails/parallax2.png",
+      "assets/thumbnails/vivillysmiler.png",
+      "assets/thumbnails/mylespractice.png",
+      "assets/thumbnails/dinosaur.png",
+      "assets/thumbnails/Lynix 67 Night.png",
+      "assets/thumbnails/Tears.png",
+      "assets/thumbnails/aylamar.png",
+      "assets/thumbnails/jamsteo.png",
+      "assets/thumbnails/grisly1.png",
+      "assets/thumbnails/al1.png",
+      "assets/thumbnails/zenith.png"
+    ],
+    "sections": {
+      "work": {
+        "eyebrow": "01 / The work",
+        "title": "Selected",
+        "accent": "work.",
+        "description": "Made to stop the scroll. Built around each creator's world."
+      },
+      "clients": {
+        "eyebrow": "02 / Collaborations",
+        "title": "Trusted",
+        "accent": "By.",
+        "description": "Creators I've worked with across the Minecraft community."
+      },
+      "reviews": {
+        "eyebrow": "03 / In their words",
+        "title": "Client",
+        "accent": "Reviews.",
+        "description": "Real feedback from the people behind the videos."
+      },
+      "process": {
+        "eyebrow": "04 / The approach",
+        "title": "How it",
+        "accent": "works.",
+        "description": "From the first idea to a finished thumbnail."
+      },
+      "contact": {
+        "eyebrow": "05 / Let's collaborate",
+        "title": "Make the next",
+        "accent": "one count.",
+        "description": "Have a video in mind? Send the concept, deadline, and references. Let's make it impossible to miss.",
+        "availability": "Open for commissions · Typically 24–72 hours"
+      }
+    },
+    "process": [
+      {
+        "label": "01 / Start here",
+        "title": "Brief",
+        "body": "Tell me about your video, audience, deadline, and references.",
+        "image": "assets/thumbnails/freshi4-min.png",
+        "alt": "Minecraft scene showing the starting point of a story"
+      },
+      {
+        "label": "02 / Find the idea",
+        "title": "Concept",
+        "body": "We agree on a visual direction and the strongest idea for your story.",
+        "image": "assets/thumbnails/wisp.png",
+        "alt": "Minecraft thumbnail concept for Wisp"
+      },
+      {
+        "label": "03 / Make the image",
+        "title": "Build",
+        "body": "I create the thumbnail, shaping the composition, lighting, and details.",
+        "image": "assets/thumbnails/VivillyPoppy.png",
+        "alt": "Completed Minecraft artwork for Vivilly"
+      },
+      {
+        "label": "04 / Ready to upload",
+        "title": "Final",
+        "body": "We review the finished image and prepare the final thumbnail for delivery.",
+        "image": "assets/thumbnails/gold.png",
+        "alt": "Finished Minecraft thumbnail for GoldActual"
+      }
+    ]
+  },
+  "portfolio": {
+    "eyebrow": "Archive / Minecraft thumbnail art",
+    "title": "Worlds worth",
+    "accent": "stopping for.",
+    "description": "Every image starts with an idea: a moment, a mood, a reason to click. Explore selected work for creators across the Minecraft community.",
+    "contactEyebrow": "Your project / Next",
+    "contactTitle": "Let's make",
+    "contactAccent": "something visible.",
+    "contactDescription": "Have a video in mind? Share the concept and let's build the image around it."
+  },
+  "contact": {
+    "dialogTitle": "Start a project.",
+    "dialogIntro": "Tell me about your channel and what you're making. Copy the brief, then send it to me on Discord.",
+    "discord": "larzyfx",
+    "xUrl": "https://x.com/larzyfx"
+  },
+  "brand": {
+    "logo": "assets/palette.svg"
   },
   "about": {
     "tagline": "Designing thumbnails that earn clicks.",
+    "eyebrow": "About / Behind the work",
+    "title": "Art with",
+    "accent": "intention.",
+    "image": "assets/thumbnails/wisp.png",
+    "imageAlt": "Minecraft thumbnail artwork created for Wisp",
+    "imageCaption": "Color, composition, and a clear story / @Wisp",
+    "artistTitle": "Every frame has",
+    "artistAccent": "a job to do.",
+    "philosophyTitle": "Built for the",
+    "philosophyAccent": "story.",
+    "contactTitle": "Your next video",
+    "contactAccent": "starts here.",
+    "contactDescription": "Tell me what you're making. Together we'll find the image that makes people look twice.",
     "sections": [
       {
         "title": "Bio",
@@ -26,13 +146,13 @@
   },
   "work": [
     {
-      "src": "assets/thumbnails/freshi4-min.png",
-      "label": "@Freshi",
+      "src": "assets/thumbnails/systemzee3.png",
+      "label": "@SystemZee",
       "alt": ""
     },
     {
-      "src": "assets/thumbnails/systemzee3.png",
-      "label": "@SystemZee",
+      "src": "assets/thumbnails/freshi4-min.png",
+      "label": "@Freshi",
       "alt": ""
     },
     {
@@ -66,14 +186,14 @@
       "alt": "Minecraft thumbnail 5"
     },
     {
-      "src": "assets/thumbnails/kitsniper.png",
-      "label": "@Kitsniper",
-      "alt": ""
-    },
-    {
       "src": "assets/thumbnails/llama.png",
       "label": "@Llama and Sticks",
       "alt": "Minecraft thumbnail 4"
+    },
+    {
+      "src": "assets/thumbnails/kitsniper.png",
+      "label": "@Kitsniper",
+      "alt": ""
     },
     {
       "src": "assets/thumbnails/parallax2.png",

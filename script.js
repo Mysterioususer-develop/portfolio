@@ -1,499 +1,304 @@
-// Register GSAP + ScrollTrigger
-let siteContent = null;
-window.addEventListener('DOMContentLoaded', async () => {
-  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+/* Shared, progressively enhanced interactions for Larzy's portfolio. */
+document.documentElement.classList.add('js');
+document.addEventListener('DOMContentLoaded', async () => {
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  document.querySelectorAll('[data-year]').forEach(el => { el.textContent = new Date().getFullYear(); });
 
-  // Smooth-ish anchor scroll for browsers without native smooth
-  document.querySelectorAll('a[href^="#"]').forEach(a => {
-    a.addEventListener('click', e => {
-      const id = a.getAttribute('href');
-      if (id.length > 1) {
-        e.preventDefault();
-        document.querySelector(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    });
+  const menuButton = document.querySelector('.menu-toggle');
+  const mobileNav = document.getElementById('mobile-nav');
+  const closeMenu = () => { if (!menuButton || !mobileNav) return; mobileNav.hidden = true; menuButton.setAttribute('aria-expanded', 'false'); menuButton.setAttribute('aria-label', 'Open menu'); };
+  menuButton?.addEventListener('click', () => {
+    const open = mobileNav.hidden;
+    mobileNav.hidden = !open;
+    menuButton.setAttribute('aria-expanded', String(open));
+    menuButton.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
   });
+  mobileNav?.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
+  document.addEventListener('keydown', event => { if (event.key === 'Escape') closeMenu(); });
 
-  if (prefersReduced) {
-    document.querySelectorAll('.reveal').forEach(el => el.style.opacity = 1);
-    return;
-  }
+  const projectDialog = document.createElement('dialog');
+  projectDialog.id = 'project-dialog';
+  projectDialog.className = 'project-dialog';
+  projectDialog.setAttribute('aria-labelledby', 'project-title');
+  projectDialog.innerHTML = `
+    <div class="project-dialog-head"><div><p class="eyebrow">Let's collaborate</p><h2 id="project-title">Start a project<span class="accent">.</span></h2></div><button class="dialog-close" type="button" aria-label="Close project brief">×</button></div>
+    <p class="dialog-intro">Tell me about your channel and what you're making. Copy the brief, then send it to me on Discord.</p>
+    <form id="brief-form" class="form-grid">
+      <div class="field"><label for="channel">YouTube channel <span aria-hidden="true">*</span></label><input id="channel" name="channel" placeholder="Channel name or URL" required maxlength="160"></div>
+      <div class="field"><label for="channel-size">Channel size <span aria-hidden="true">*</span></label><select id="channel-size" name="channelSize" required><option value="">Select a range</option><option>Under 10K subscribers</option><option>10K–100K subscribers</option><option>100K–1M subscribers</option><option>1M+ subscribers</option></select></div>
+      <div class="field"><label for="handle">Discord or X handle <span aria-hidden="true">*</span></label><input id="handle" name="handle" placeholder="@yourhandle" required maxlength="80"></div>
+      <div class="field"><label for="deadline">Deadline</label><input id="deadline" name="deadline" placeholder="When do you need it?" maxlength="80"></div>
+      <div class="field span-2"><label for="details">Project details <span aria-hidden="true">*</span></label><textarea id="details" name="details" rows="4" placeholder="Video idea, style, references, and anything else I should know…" required maxlength="3000"></textarea></div>
+      <div class="form-actions"><button class="button button-light" type="submit">Copy project brief ↗</button><button class="text-link reset-button" type="reset">Clear form</button></div>
+      <p class="form-status span-2" id="form-status" role="status" aria-live="polite">Your details stay in your browser until you send the brief.</p>
+    </form>
+    <div class="dialog-contact"><span>Send the copied brief to</span><button id="copy-discord" type="button">Discord <strong>larzyfx</strong> ↗</button><a href="https://x.com/larzyfx" target="_blank" rel="noopener noreferrer">X @larzyfx ↗</a></div>`;
+  document.body.append(projectDialog);
+  const openProject = () => { closeMenu(); if (!projectDialog.open) projectDialog.showModal(); projectDialog.querySelector('#channel').focus(); };
+  document.querySelectorAll('a[href="contact.html"]').forEach(link => link.addEventListener('click', event => { event.preventDefault(); openProject(); }));
+  projectDialog.querySelector('.dialog-close').addEventListener('click', () => projectDialog.close());
+  projectDialog.addEventListener('click', event => { if (event.target === projectDialog) projectDialog.close(); });
+  if (new URLSearchParams(location.search).has('project')) openProject();
 
-  // Text & section reveals (avoid transform on tilt cards to prevent jitter)
-  const reveals = gsap.utils.toArray('.reveal');
-  reveals.forEach((el, i) => {
-    const isTilt = el.classList.contains('tilt-card') || (el.closest && el.closest('#work .tilt-card'));
-    const tween = {
-      opacity: 1,
-      duration: 0.8,
-      ease: 'power2.out',
-      delay: i * 0.03,
-      scrollTrigger: {
-        trigger: el,
-        start: 'top 85%',
-      }
-    };
-    if (!isTilt) tween.y = 0; // only non-tilt cards animate translateY
-    gsap.to(el, tween);
-  });
-
-  // Parallax elements (skip work grid cards to keep alignment)
-  gsap.utils.toArray('[data-parallax]')
-    .forEach(el => {
-      if (el.closest && el.closest('#work .grid')) return; // do not parallax thumbnails grid
-      const speed = parseFloat(el.getAttribute('data-parallax')) || 0.2;
-      gsap.to(el, {
-        yPercent: speed * -20,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: el,
-          start: 'top bottom',
-          end: 'bottom top',
-          scrub: true,
-        }
+  function renderHeroWall(items, selected) {
+    const columns = [...document.querySelectorAll('.hero-art-column')];
+    if (!columns.length) return;
+    if (items?.length) {
+      const bySource = new Map(items.filter(item => item.src).map(item => [item.src, item]));
+      const chosen = Array.isArray(selected) && selected.length ? selected.map(src => bySource.get(src) || { src, label: 'Larzy' }) : items;
+      const unique = [...new Map(chosen.filter(item => item.src).map(item => [item.src, item])).values()].slice(0, 30);
+      columns.forEach((column, col) => {
+        column.replaceChildren(...unique.filter((_, i) => i % 3 === col).map(item => {
+          const image = document.createElement('img'); image.src = item.src;
+          image.alt = `Minecraft thumbnail artwork for ${item.label || 'Larzy'}`;
+          image.width = 1920; image.height = 1080; image.loading = 'lazy'; image.decoding = 'async'; return image;
+        }));
       });
-    });
-
-  // Hero orbs subtle motion
-  const orbs = document.querySelectorAll('.orb');
-  orbs.forEach((o, i) => {
-    gsap.to(o, { y: 8, repeat: -1, yoyo: true, duration: 2 + i, ease: 'sine.inOut', delay: i * 0.2 });
-  });
-
-  // Tilt cards (reusable for dynamically rendered thumbnails)
-  function setupTilt(scope = document) {
-    const cards = scope.querySelectorAll('.tilt-card:not([data-tilt-bound])');
-    const constrain = 12;
-    cards.forEach(card => {
-      card.dataset.tiltBound = 'true';
-      let shine = card.querySelector('.shine');
-      if (!shine) {
-        shine = document.createElement('div');
-        shine.className = 'shine';
-        card.appendChild(shine);
-      }
-      const handleMove = (e) => {
-        const rect = card.getBoundingClientRect();
-        const mx = (e.clientX - rect.left) / rect.width; // 0..1
-        const my = (e.clientY - rect.top) / rect.height; // 0..1
-        const rx = (0.5 - my) * constrain;
-        const ry = (mx - 0.5) * constrain;
-        card.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`;
-        shine.style.setProperty('--mx', `${mx * 100}%`);
-        shine.style.setProperty('--my', `${my * 100}%`);
-        shine.style.opacity = '1';
-      };
-      const reset = () => {
-        card.style.transform = 'perspective(800px) rotateX(0) rotateY(0)';
-        shine.style.opacity = '0';
-      };
-      card.addEventListener('mousemove', handleMove);
-      card.addEventListener('mouseleave', reset);
-    });
+    }
+    columns.forEach(column => [...column.children].forEach(image => {
+      const duplicate = image.cloneNode(true); duplicate.alt = ''; duplicate.setAttribute('aria-hidden', 'true');
+      duplicate.removeAttribute('fetchpriority'); column.append(duplicate);
+    }));
   }
-  setupTilt();
 
-  // Marquee: ensure continuous loop by duplicating items to 2x width
-  const marquee = document.querySelector('.marquee');
-  const track = document.querySelector('.marquee-track');
-  if (marquee && track) {
-    const ensureFill = () => {
-      let loops = 0;
-      while (track.scrollWidth < marquee.clientWidth * 2 && loops < 10) {
-        track.innerHTML += track.innerHTML; // duplicate items
-        loops++;
-      }
+  if ('IntersectionObserver' in window && !reducedMotion.matches) {
+    const observer = new IntersectionObserver(entries => entries.forEach(entry => {
+      if (entry.isIntersecting) { entry.target.classList.add('is-visible'); observer.unobserve(entry.target); }
+    }), { threshold: .08 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  } else document.querySelectorAll('.reveal').forEach(el => el.classList.add('is-visible'));
+
+  let content;
+  try {
+    const response = await fetch('data/content.json');
+    if (!response.ok) throw new Error('Content unavailable');
+    content = await response.json();
+  } catch (_) { content = null; }
+  if (content) {
+    const heroText = document.querySelector('[data-content="heroDescription"]');
+    if (heroText && content.home?.heroDescription) heroText.textContent = content.home.heroDescription;
+    const aboutTagline = document.querySelector('[data-content="aboutTagline"]');
+    if (aboutTagline && content.about?.tagline) aboutTagline.textContent = content.about.tagline;
+    document.querySelectorAll('[data-about]').forEach(el => {
+      const section = content.about?.sections?.find(item => item.title === el.dataset.about);
+      if (section?.body) el.textContent = section.body;
+    });
+    applyContent(content);
+    renderWork(content.work || []);
+    renderHeroWall(content.work || [], content.home?.heroImages);
+    renderClients(content.clients || []);
+    renderReviews(content.reviews || []);
+    renderProcess(content.home?.process);
+  } else renderHeroWall();
+
+  function assetPath(path) { return typeof path === 'string' && !/^\s*(?:javascript:|data:)/i.test(path) ? path : ''; }
+  function applyContent(data) {
+    const setText = (selector, value) => { const el = document.querySelector(selector); if (el && typeof value === 'string') el.textContent = value; };
+    const setImage = (selector, src, alt) => { const el = document.querySelector(selector); if (el && src) { el.src = assetPath(src); if (typeof alt === 'string') el.alt = alt; } };
+    const setHeading = (selector, lead, accent, lineBreak = false) => {
+      const el = document.querySelector(selector); if (!el || !lead || !accent) return;
+      const em = document.createElement('em'); em.textContent = accent;
+      el.replaceChildren(document.createTextNode(lead), lineBreak ? document.createElement('br') : document.createTextNode(' '), em);
     };
-    ensureFill();
-    window.addEventListener('resize', ensureFill);
-  }
-
-  // Clients / content rendering
-  const clientsContainer = document.querySelector('.clients[data-source]');
-
-  function normalizeAssetPath(src) {
-    if (!src) return '';
-    if (/^https?:\/\//i.test(src)) return src;
-    return src.startsWith('/') ? src : '/' + src.replace(/^\.?\//, '');
-  }
-
-  function renderClients(list) {
-    if (!clientsContainer || !Array.isArray(list)) return;
-    clientsContainer.innerHTML = '';
-    const frag = document.createDocumentFragment();
-    list.forEach(c => {
-      const handle = c.handle || c.name || 'Client';
-      const subs = c.subs || c.subscribers || '';
-      const avatar = normalizeAssetPath(c.avatar) || 'https://placehold.co/96x96/png';
-      const card = document.createElement('article');
-      card.className = 'client-card reveal';
-      card.innerHTML = `
-        <img class="avatar" src="${avatar}" alt="${handle} avatar" loading="lazy" decoding="async" width="84" height="84" onerror="this.src='https://placehold.co/96x96/png';"/>
-        <div class="meta">
-          <h3>${handle}</h3>
-          <div class="subs">${subs}</div>
-        </div>`;
-      frag.appendChild(card);
-    });
-    clientsContainer.appendChild(frag);
-    if (window.gsap && window.ScrollTrigger) {
-      clientsContainer.querySelectorAll('.reveal').forEach((el, i) => {
-        gsap.to(el, {
-          opacity: 1, y: 0, duration: 0.8, ease: 'power2.out', delay: i * 0.03,
-          scrollTrigger: { trigger: el, start: 'top 85%' }
-        });
-      });
-    } else {
-      clientsContainer.querySelectorAll('.reveal').forEach(el => { el.style.opacity = 1; el.style.transform = 'none'; });
-    }
-  }
-
-  async function loadClients() {
-    if (siteContent && Array.isArray(siteContent.clients)) {
-      renderClients(siteContent.clients);
-      return;
-    }
-    if (!clientsContainer) return;
-    const src = clientsContainer.getAttribute('data-source');
-    try {
-      const res = await fetch(src, { cache: 'no-store' });
-      if (res.ok) {
-        let data = await res.json();
-        data = await enrichAndSortClients(data);
-        renderClients(data);
-        return;
+    const home = data.home || {};
+    setText('.hero .eyebrow', home.heroTag);
+    if (document.body.dataset.page === 'home' && home.heroTitleLine1) {
+      const h1 = document.querySelector('.hero h1');
+      if (h1) {
+        const em = document.createElement('em'); em.textContent = home.heroTitleAccent || 'Attract';
+        const dot = document.createElement('span'); dot.className = 'accent'; dot.textContent = '.';
+        h1.replaceChildren(document.createTextNode(home.heroTitleLine1), document.createElement('br'), document.createTextNode(`${home.heroTitleLine2 || 'That'} `), em, document.createElement('br'), document.createTextNode(home.heroTitleLine3 || 'Viewers'), dot);
       }
-    } catch (e) { /* ignore and try inline fallback */ }
-    const inline = document.getElementById('clients-data');
-    if (inline && inline.textContent) {
-      try {
-        let data = JSON.parse(inline.textContent);
-        data = await enrichAndSortClients(data);
-        renderClients(data);
-      } catch (e) {}
     }
-  }
-
-  function parseSubsToNumber(text) {
-    if (!text) return 0;
-    const t = String(text).replace(/[,'\s]/g, '').toUpperCase();
-    const m = t.match(/([\d.]+)([MK]?)/);
-    if (!m) return 0;
-    const num = parseFloat(m[1]);
-    const suf = m[2];
-    if (suf === 'M') return Math.round(num * 1_000_000);
-    if (suf === 'K') return Math.round(num * 1_000);
-    return Math.round(num);
-  }
-
-  async function enrichAndSortClients(list) {
-    const needs = list.some(c => (!c.subs || !c.avatar) && c.url);
-    if (needs) {
-      await Promise.allSettled(list.map(async c => {
-        if (!c.url || (c.subs && c.avatar)) return;
-        try {
-          const proxied = 'https://r.jina.ai/http://' + c.url.replace(/^https?:\/\//,'');
-          const resp = await fetch(proxied, { cache: 'no-store' });
-          if (!resp.ok) return;
-          const txt = await resp.text();
-          if (!c.subs) {
-            let m = txt.match(/subscriberCountText\"\s*:\s*\{\s*\"simpleText\"\s*:\s*\"([^\"]+)/i);
-            if (!m) m = txt.match(/subscriberCountText[^}]*?\"text\"\s*:\s*\"([^\"]+)/i);
-            if (m) c.subs = m[1].replace(/subscribers?/i,'Subs').trim();
-          }
-          if (!c.avatar) {
-            const am = txt.match(/\"avatar\"\s*:\s*\{\s*\"thumbnails\"\s*:\s*\[\{\s*\"url\"\s*:\s*\"(https?:[^\"\\]+)/i);
-            if (am) c.avatar = am[1].replace(/\\\//g,'/').replace(/\u0026/g,'&');
-          }
-        } catch(_) {}
-      }));
-    }
-    return [...list].sort((a,b) => parseSubsToNumber(b.subs) - parseSubsToNumber(a.subs));
-  }
-
-  // Reviews slider (center active, sides faded)
-  const rvViewport = document.querySelector('.reviews-viewport');
-  const rvTrack = document.getElementById('reviews-track');
-  const btnPrev = document.getElementById('reviews-prev');
-  const btnNext = document.getElementById('reviews-next');
-  let rvIndex = 0;
-
-  function renderReviews(list) {
-    if (!rvTrack || !Array.isArray(list)) return;
-    rvTrack.innerHTML = '';
-    const frag = document.createDocumentFragment();
-    list.forEach(item => {
-      const avatar = normalizeAssetPath(item.avatar) || 'https://placehold.co/64x64/png';
-      const card = document.createElement('article');
-      card.className = 'review-card';
-      card.innerHTML = `
-        <div class="review-header">
-          <img class="avatar" src="${avatar}" alt="${item.name || 'Client'}" loading="lazy" decoding="async" onerror="this.src='https://placehold.co/64x64/png';"/>
-          <div>
-            <div class="name">${item.name || 'Client'}</div>
-            <div class="muted">${item.role || ''}</div>
-          </div>
-        </div>
-        <p class="quote">${item.quote || ''}</p>
-      `;
-      frag.appendChild(card);
-    });
-    rvTrack.appendChild(frag);
-    const n = list.length;
-    if (n) rvIndex = Math.floor(n / 2);
-    rvSnapToCurrent();
-  }
-  function rvCards() { return rvTrack ? Array.from(rvTrack.querySelectorAll('.review-card')) : []; }
-  function rvUpdateClasses(cards) {
-    cards.forEach((c,i) => {
-      c.classList.remove('is-active','is-prev','is-next');
-      if (i === rvIndex) c.classList.add('is-active');
-      else if (i === (rvIndex - 1 + cards.length) % cards.length) c.classList.add('is-prev');
-      else if (i === (rvIndex + 1) % cards.length) c.classList.add('is-next');
-    });
-  }
-  function rvSnapToCurrent() {
-    if (!rvTrack || !rvViewport) return;
-    const cards = rvCards();
-    if (!cards[rvIndex]) return;
-    const active = cards[rvIndex];
-    const left = active.offsetLeft;
-    const w = active.offsetWidth;
-    const x = -(left - (rvViewport.clientWidth/2 - w/2));
-    rvTrack.style.transform = `translateX(${x}px)`;
-    rvUpdateClasses(cards);
-  }
-  function rvGo(dir) { const cards = rvCards(); if (!cards.length) return; rvIndex = (rvIndex + dir + cards.length) % cards.length; rvSnapToCurrent(); }
-  btnPrev?.addEventListener('click', () => rvGo(-1));
-  btnNext?.addEventListener('click', () => rvGo(1));
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowLeft') rvGo(-1);
-    if (e.key === 'ArrowRight') rvGo(1);
-  });
-  window.addEventListener('resize', rvSnapToCurrent);
-  // Initialize after layout: start centered so both sides show
-  setTimeout(() => {
-    const n = rvCards().length;
-    if (n) rvIndex = Math.floor(n / 2);
-    rvSnapToCurrent();
-  }, 50);
-
-  async function loadContentJSON() {
-    try {
-      const res = await fetch('data/content.json', { cache: 'no-store' });
-      if (!res.ok) return null;
-      return await res.json();
-    } catch (err) {
-      const inline = document.getElementById('content-inline');
-      if (inline?.textContent) {
-        try { return JSON.parse(inline.textContent); } catch (_) {}
+    setText('.hero-description', home.heroDescription);
+    setText('.hero-actions .button', home.primaryCta ? `${home.primaryCta} ↗` : null);
+    setText('.hero-actions .text-link', home.secondaryCta ? `${home.secondaryCta} ↗` : null);
+    for (const [key, selector] of Object.entries({ work: '.work-section', clients: '.clients-section', reviews: '.reviews-section', process: '.process-section', contact: 'body[data-page="home"] .contact-section' })) {
+      const section = home.sections?.[key]; if (!section) continue;
+      setText(`${selector} .eyebrow`, section.eyebrow);
+      setHeading(`${selector} h2`, section.title, section.accent, key === 'contact');
+      setText(key === 'contact' ? `${selector} .contact-bottom > p` : `${selector} .section-heading > p`, section.description);
+      if (key === 'contact' && section.availability) {
+        const availability = document.querySelector(`${selector} .availability`);
+        if (availability) { const dot = document.createElement('span'); dot.className = 'status-dot'; availability.replaceChildren(dot, document.createTextNode(` ${section.availability}`)); }
       }
-      return null;
     }
+    const about = data.about || {};
+    setText('.about-section + .philosophy-section [data-about="Process"]', about.sections?.find(x => x.title === 'Process')?.body);
+    setText('body[data-page="about"] .page-intro .eyebrow', about.eyebrow);
+    setHeading('body[data-page="about"] .page-intro h1', about.title, about.accent, true);
+    setText('[data-content="aboutTagline"]', about.tagline);
+    setImage('.about-image img', about.image, about.imageAlt);
+    setText('.about-image figcaption', about.imageCaption);
+    setHeading('.about-copy h2', about.artistTitle, about.artistAccent, true);
+    setHeading('.philosophy-section h2', about.philosophyTitle, about.philosophyAccent);
+    setHeading('body[data-page="about"] .contact-section h2', about.contactTitle, about.contactAccent, true);
+    setText('body[data-page="about"] .contact-bottom > p', about.contactDescription);
+    const portfolio = data.portfolio || {};
+    setText('body[data-page="portfolio"] .page-intro .eyebrow', portfolio.eyebrow);
+    setHeading('body[data-page="portfolio"] .page-intro h1', portfolio.title, portfolio.accent, true);
+    setText('body[data-page="portfolio"] .intro-bottom > p', portfolio.description);
+    setText('body[data-page="portfolio"] .contact-section .eyebrow', portfolio.contactEyebrow);
+    setHeading('body[data-page="portfolio"] .contact-section h2', portfolio.contactTitle, portfolio.contactAccent, true);
+    setText('body[data-page="portfolio"] .contact-bottom > p', portfolio.contactDescription);
+    const contact = data.contact || {};
+    if (contact.dialogTitle) {
+      const title = projectDialog.querySelector('#project-title');
+      const dot = document.createElement('span'); dot.className = 'accent'; dot.textContent = '.';
+      title.replaceChildren(document.createTextNode(contact.dialogTitle.replace(/\.$/, '')), dot);
+    }
+    setText('.dialog-intro', contact.dialogIntro);
+    const discord = contact.discord || 'larzyfx';
+    const discordLabel = projectDialog.querySelector('#copy-discord strong'); if (discordLabel) discordLabel.textContent = discord;
+    const xUrl = /^https:\/\/x\.com\/[\w]+\/?$/.test(contact.xUrl || '') ? contact.xUrl : 'https://x.com/larzyfx';
+    document.querySelectorAll('a[href="https://x.com/larzyfx"]').forEach(a => { a.href = xUrl; });
+    const xContact = projectDialog.querySelector('.dialog-contact a');
+    if (xContact) xContact.textContent = `X @${xUrl.split('/').filter(Boolean).at(-1)} ↗`;
+    const logo = assetPath(data.brand?.logo);
+    if (logo) { document.querySelectorAll('.brand img').forEach(img => { img.src = logo; }); const icon = document.querySelector('link[rel="icon"]'); if (icon) icon.href = logo; }
   }
-
-  function renderWork(list) {
+  function renderProcess(steps) {
+    const list = document.querySelector('.process-list'); if (!list || !Array.isArray(steps)) return;
+    list.replaceChildren(...steps.map(step => {
+      const li = document.createElement('li'), copy = document.createElement('div'), label = document.createElement('span'), title = document.createElement('h3'), body = document.createElement('p'), img = document.createElement('img');
+      copy.className = 'process-copy'; label.textContent = step.label || ''; title.textContent = step.title || ''; body.textContent = step.body || '';
+      img.src = assetPath(step.image); img.alt = step.alt || `Minecraft artwork for ${step.title || 'the process'}`; img.width = 1920; img.height = 1080; img.loading = 'lazy';
+      copy.append(label, title, body); li.append(copy, img); return li;
+    }));
+  }
+  function renderWork(items) {
     const grid = document.getElementById('work-grid');
-    if (!grid || !Array.isArray(list)) return;
-    grid.innerHTML = '';
-    const frag = document.createDocumentFragment();
-    const parallaxValues = [0.25, 0.12, 0.16, 0.18, 0.22, 0.14, 0.20, 0.12, 0.16, 0.18, 0.22, 0.14, 0.20, 0.12, 0.16, 0.18, 0.22, 0.14];
-    list.forEach((item, idx) => {
-      const card = document.createElement('article');
-      card.className = 'card tilt-card reveal';
-      const depth = item.parallax || parallaxValues[idx % parallaxValues.length];
-      card.setAttribute('data-parallax', depth);
-      const src = normalizeAssetPath(item.src) || 'https://placehold.co/400x240/png';
-      const alt = item.alt || item.label || 'Thumbnail';
-      const label = item.label || '';
-      card.innerHTML = `
-        <img class="thumb" src="${src}" alt="${alt}" loading="lazy" decoding="async" onerror="this.src='https://placehold.co/400x240/png';"/>
-        <div class="shine"></div>
-        <span class="label">${label}</span>
-      `;
-      frag.appendChild(card);
-    });
-    grid.appendChild(frag);
-    setupShowMore();
-    setupLightbox();
-    setupTilt(grid);
-    // Ensure newly rendered items are visible even without GSAP
-    grid.querySelectorAll('.card').forEach(card => {
-      card.style.opacity = '1';
-      card.style.transform = 'none';
-    });
-  }
-
-  (async function initContent() {
-    siteContent = await loadContentJSON();
-    if (siteContent) {
-      renderWork(siteContent.work);
-      renderClients(siteContent.clients || []);
-      renderReviews(siteContent.reviews || []);
-    } else {
-      loadClients();
+    if (!grid) return;
+    grid.replaceChildren(...items.map((item, index) => {
+      const article = document.createElement('article'); article.className = 'work-card';
+      const button = document.createElement('button'); button.className = 'work-open'; button.type = 'button';
+      const creator = item.label || 'Larzy'; button.setAttribute('aria-label', `View thumbnail for ${creator}`);
+      const img = document.createElement('img'); img.src = assetPath(item.src); img.alt = item.alt && !/^Minecraft thumbnail \d+$/i.test(item.alt) ? item.alt : `Minecraft thumbnail artwork for ${creator}`;
+      img.width = 1920; img.height = 1080; img.loading = index < 2 ? 'eager' : 'lazy'; img.decoding = 'async';
+      button.append(img);
+      const meta = document.createElement('div'); meta.className = 'work-meta';
+      const name = document.createElement('span'); name.textContent = `${String(index + 1).padStart(2, '0')} / ${creator}`;
+      const type = document.createElement('span'); type.textContent = 'Minecraft thumbnail ↗'; meta.append(name, type);
+      article.append(button, meta); return article;
+    }));
+    const count = document.getElementById('work-count'); if (count) count.textContent = items.length;
+    const showMore = document.getElementById('show-more');
+    if (showMore) {
+      const limit = Number(grid.dataset.limit) || 8;
+      let expanded = false;
+      const update = () => { grid.querySelectorAll('.work-card').forEach((card, i) => { card.hidden = !expanded && i >= limit; }); showMore.hidden = items.length <= limit; showMore.setAttribute('aria-expanded', String(expanded)); showMore.textContent = expanded ? 'Show less work ↑' : 'Show more work ↓'; };
+      showMore.addEventListener('click', () => { expanded = !expanded; update(); }); update();
     }
-  })();
-
-  // Commission: copy Discord tag
-  document.getElementById('copy-discord')?.addEventListener('click', async (e) => {
-    const btn = e.currentTarget;
-    try {
-      await navigator.clipboard.writeText('larzyfx');
-      const prev = btn.textContent;
-      btn.textContent = 'Copied!';
-      setTimeout(() => btn.textContent = prev, 1200);
-    } catch (err) {
-      alert('Discord tag: larzyfx');
-    }
-  });
-
-  // Contact page: Copy brief to clipboard
-  const briefForm = document.getElementById('brief-form');
-  if (briefForm) {
-    briefForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const name = briefForm.querySelector('#name')?.value?.trim() || '';
-      const handle = briefForm.querySelector('#handle')?.value?.trim() || '';
-      const project = briefForm.querySelector('#project')?.value || '';
-      const budget = briefForm.querySelector('#budget')?.value || '';
-      const details = briefForm.querySelector('#details')?.value?.trim() || '';
-      const lines = [
-        `New Project Inquiry`,
-        `Name: ${name}`,
-        `Handle: ${handle}`,
-        `Project: ${project}`,
-        `Budget: ${budget}`,
-        `Details: ${details}`
-      ];
-      const text = lines.join('\n');
-      try {
-        await navigator.clipboard.writeText(text);
-        alert('Brief copied. Paste into a Discord DM.');
-      } catch (_) {
-        // Fallback: show the text in an alert if clipboard fails
-        alert('Copy this and paste into Discord:\n\n' + text);
-      }
-    });
   }
-
-  // Show More / Show Less with smooth height + fade transitions
-  function setupShowMore() {
-    const grid = document.getElementById('work-grid');
-    const btn = document.getElementById('show-more');
-    if (!grid || !btn) return;
-
-    const items = Array.from(grid.querySelectorAll('.card'));
-    const INITIAL_ROWS = 4; // rows visible initially
-    const HEIGHT_MS = 300;  // grid height animation
-    const FADE_MS = 180;    // item fade duration
+  function renderClients(items) {
+    const grid = document.getElementById('clients-grid'); if (!grid) return;
+    grid.replaceChildren(...items.map(item => {
+      const card = document.createElement('article'); card.className = 'client-card';
+      const image = document.createElement('img'); image.src = assetPath(item.avatar); image.alt = ''; image.width = 56; image.height = 56; image.loading = 'lazy'; image.decoding = 'async';
+      const text = document.createElement('div'); const name = document.createElement('strong'); name.textContent = item.handle || 'Creator'; const subs = document.createElement('span'); subs.textContent = item.subs || ''; text.append(name, subs); card.append(image, text); return card;
+    }));
+    const more = document.getElementById('clients-more');
+    if (!more) return;
     let expanded = false;
-    let animating = false;
-
-    const getCols = () => {
-      const cols = getComputedStyle(grid).gridTemplateColumns;
-      return (!cols || cols === 'none') ? 1 : cols.split(' ').filter(Boolean).length;
+    const update = () => {
+      const columns = getComputedStyle(grid).gridTemplateColumns.split(' ').length || 1;
+      const visible = columns * 3;
+      [...grid.children].forEach((card, index) => { card.hidden = !expanded && index >= visible; });
+      more.hidden = items.length <= visible;
+      more.setAttribute('aria-expanded', String(expanded));
+      more.textContent = expanded ? 'Show fewer creators ↑' : 'Show more creators ↓';
     };
-    const initialCount = () => Math.min(items.length, getCols() * INITIAL_ROWS);
-
-    const updateButton = () => {
-      btn.textContent = expanded ? 'Show Less' : 'Show More';
-      btn.setAttribute('aria-expanded', expanded.toString());
-      btn.hidden = items.length <= initialCount();
-    };
-
-    const init = () => {
-      const keep = initialCount();
-      items.forEach((it, idx) => {
-        const hide = idx >= keep;
-        it.classList.toggle('hidden-item', hide);
-        if (hide) {
-          it.classList.remove('reveal');
-          it.style.transition = '';
-          it.style.opacity = '';
-        }
-      });
-      updateButton();
-    };
-
-    const animateGridHeight = (from, to) => {
-      grid.style.maxHeight = from + 'px';
-      grid.style.overflow = 'hidden';
-      grid.style.transition = 'max-height ' + HEIGHT_MS + 'ms cubic-bezier(.2,.7,.3,1)';
-      void grid.offsetHeight;
-      grid.style.maxHeight = to + 'px';
-      window.setTimeout(() => {
-        grid.style.transition = '';
-        grid.style.maxHeight = '';
-        grid.style.overflow = '';
-      }, HEIGHT_MS + 20);
-    };
-
-    const expand = () => {
-      if (animating) return; animating = true;
-      const before = grid.getBoundingClientRect().height;
-      const toShow = items.filter(it => it.classList.contains('hidden-item'));
-      toShow.forEach(it => {
-        it.classList.remove('hidden-item');
-        it.classList.remove('reveal');
-        it.style.opacity = '0';
-      });
-      const after = grid.getBoundingClientRect().height;
-      animateGridHeight(before, after);
-      window.requestAnimationFrame(() => {
-        toShow.forEach(it => { it.style.transition = 'opacity ' + FADE_MS + 'ms ease'; it.style.opacity = '1'; });
-      });
-      window.setTimeout(() => {
-        toShow.forEach(it => { it.style.transition = ''; it.style.opacity = ''; });
-        expanded = true; updateButton(); animating = false;
-      }, Math.max(HEIGHT_MS, FADE_MS) + 30);
-    };
-
-    const collapse = () => {
-      if (animating) return; animating = true;
-      const before = grid.getBoundingClientRect().height;
-      const keep = initialCount();
-      const toHide = items.filter((_, idx) => idx >= keep && !items[idx].classList.contains('hidden-item'));
-      toHide.forEach(it => { it.style.transition = 'opacity ' + FADE_MS + 'ms ease'; it.style.opacity = '0'; });
-      window.setTimeout(() => {
-        toHide.forEach(it => { it.classList.add('hidden-item'); it.style.transition = ''; it.style.opacity = ''; });
-        const after = grid.getBoundingClientRect().height;
-        animateGridHeight(before, after);
-        window.setTimeout(() => { expanded = false; updateButton(); animating = false; }, HEIGHT_MS + 30);
-      }, FADE_MS);
-    };
-
-    init();
-    window.addEventListener('resize', () => { if (!animating) { expanded ? expand() : init(); } });
-    btn.addEventListener('click', () => { expanded ? collapse() : expand(); });
+    more.addEventListener('click', () => { expanded = !expanded; update(); });
+    window.addEventListener('resize', update); update();
   }
-  setupShowMore();
+  function renderReviews(items) {
+    const track = document.getElementById('reviews-track'); if (!track) return;
+    if (!items.length) { track.replaceChildren(); const controls = document.querySelector('.review-controls'); if (controls) controls.hidden = true; return; }
+    track.replaceChildren(...items.map(item => {
+      const quote = document.createElement('blockquote'); quote.className = 'review-card';
+      if ((item.quote || '').length > 220) quote.classList.add('review-card-long');
+      const body = document.createElement('p'); body.textContent = `“${String(item.quote || '').replace(/^[“"]|[”"]$/g, '')}”`;
+      const author = document.createElement('div'); author.className = 'review-author';
+      if (item.avatar) { const image = document.createElement('img'); image.src = assetPath(item.avatar); image.alt = ''; image.width = 44; image.height = 44; author.append(image); }
+      const byline = document.createElement('div'); const name = document.createElement('strong'); name.textContent = item.name || 'Client'; const role = document.createElement('span'); role.textContent = item.role || ''; byline.append(name, role); author.append(byline); quote.append(body, author); return quote;
+    }));
+    const originals = [...track.children];
+    originals.forEach(card => { const duplicate = card.cloneNode(true); duplicate.setAttribute('aria-hidden', 'true'); track.append(duplicate); });
+    const count = document.getElementById('review-count');
+    const step = () => originals[0].offsetWidth + 16;
+    const loopWidth = () => step() * originals.length;
+    const updateCount = () => { const index = Math.round((track.scrollLeft % loopWidth()) / step()) % originals.length; if (count) count.textContent = `${String(index + 1).padStart(2, '0')} / ${String(items.length).padStart(2, '0')}`; };
+    let paused = false, dragging = false, pauseUntil = 0, lastFrame = 0, startX = 0, startScroll = 0;
+    const go = direction => {
+      if (direction < 0 && track.scrollLeft < step()) track.scrollLeft += loopWidth();
+      pauseUntil = performance.now() + 3500;
+      track.scrollBy({ left: direction * step(), behavior: reducedMotion.matches ? 'instant' : 'smooth' });
+    };
+    document.getElementById('reviews-prev')?.addEventListener('click', () => go(-1));
+    document.getElementById('reviews-next')?.addEventListener('click', () => go(1));
+    track.addEventListener('pointerenter', () => { paused = true; });
+    track.addEventListener('pointerleave', () => { paused = false; dragging = false; });
+    track.addEventListener('focusin', () => { paused = true; });
+    track.addEventListener('focusout', () => { paused = false; });
+    track.addEventListener('pointerdown', event => {
+      if (event.pointerType !== 'mouse') return;
+      dragging = true; startX = event.clientX; startScroll = track.scrollLeft;
+      track.setPointerCapture(event.pointerId); track.classList.add('is-dragging');
+    });
+    track.addEventListener('pointermove', event => { if (dragging) track.scrollLeft = startScroll - (event.clientX - startX); });
+    const stopDrag = () => { dragging = false; track.classList.remove('is-dragging'); pauseUntil = performance.now() + 3500; };
+    track.addEventListener('pointerup', stopDrag); track.addEventListener('pointercancel', stopDrag);
+    track.addEventListener('scroll', updateCount, { passive: true }); updateCount();
+    const tick = now => {
+      if (track.isConnected) {
+        if (!reducedMotion.matches && !document.hidden && !paused && !dragging && now > pauseUntil && lastFrame) track.scrollLeft += Math.min(now - lastFrame, 50) * .032;
+        if (track.scrollLeft >= loopWidth()) track.scrollLeft -= loopWidth();
+        lastFrame = now; requestAnimationFrame(tick);
+      }
+    };
+    requestAnimationFrame(tick);
+  }
 
-  // Lightbox for work thumbnails
-  function setupLightbox() {
-    const thumbs = document.querySelectorAll('#work .card .thumb');
-    if (!thumbs.length) return;
-    const overlay = document.createElement('div');
-    overlay.className = 'lightbox';
-    overlay.innerHTML = '<div class="backdrop"></div><img alt=""><button class="close" aria-label="Close" title="Close">&times;</button>';
-    document.body.appendChild(overlay);
-    const imgEl = overlay.querySelector('img');
-    const closeBtn = overlay.querySelector('.close');
-    const close = () => overlay.classList.remove('is-open');
-    overlay.addEventListener('click', (e) => {
-      if (e.target === overlay || e.target.classList.contains('backdrop') || e.target === closeBtn) close();
+  const lightbox = document.getElementById('lightbox');
+  if (lightbox) {
+    lightbox.innerHTML = '<button class="lightbox-close" type="button" aria-label="Close artwork preview">×</button><button class="lightbox-arrow lightbox-prev" type="button" aria-label="Previous artwork">←</button><figure><img alt=""><figcaption></figcaption></figure><button class="lightbox-arrow lightbox-next" type="button" aria-label="Next artwork">→</button>';
+    const grid = document.getElementById('work-grid'); let current = 0;
+    const workButtons = () => [...grid.querySelectorAll('.work-open')];
+    const showArtwork = () => {
+      const source = workButtons()[current]; if (!source) return;
+      const original = source.querySelector('img'); const preview = lightbox.querySelector('img');
+      preview.src = original.currentSrc || original.src; preview.alt = original.alt;
+      lightbox.querySelector('figcaption').textContent = `${current + 1} / ${workButtons().length} · ${source.nextElementSibling?.firstElementChild?.textContent || ''}`;
+    };
+    const move = direction => { current = (current + direction + workButtons().length) % workButtons().length; showArtwork(); };
+    grid?.addEventListener('click', event => {
+      const button = event.target.closest('.work-open'); if (!button || !lightbox.showModal) return;
+      current = workButtons().indexOf(button); showArtwork(); lightbox.showModal(); lightbox.querySelector('.lightbox-close').focus();
     });
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && overlay.classList.contains('is-open')) close();
-    });
-    thumbs.forEach(t => {
-      t.addEventListener('click', () => {
-        imgEl.src = t.currentSrc || t.src;
-        imgEl.alt = t.alt || 'Thumbnail';
-        overlay.classList.add('is-open');
-      });
+    lightbox.querySelector('.lightbox-close').addEventListener('click', () => lightbox.close());
+    lightbox.querySelector('.lightbox-prev').addEventListener('click', () => move(-1));
+    lightbox.querySelector('.lightbox-next').addEventListener('click', () => move(1));
+    lightbox.addEventListener('click', event => { if (event.target === lightbox) lightbox.close(); });
+    lightbox.addEventListener('keydown', event => {
+      if (event.key === 'ArrowLeft') { event.preventDefault(); move(-1); }
+      if (event.key === 'ArrowRight') { event.preventDefault(); move(1); }
     });
   }
-  setupLightbox();
 
+  const status = document.getElementById('form-status');
+  const writeClipboard = async text => { await navigator.clipboard.writeText(text); };
+  document.getElementById('copy-discord')?.addEventListener('click', async event => {
+    const discord = content?.contact?.discord || 'larzyfx';
+    try { await writeClipboard(discord); event.currentTarget.querySelector('strong').textContent = 'Copied!'; setTimeout(() => { event.currentTarget.querySelector('strong').textContent = discord; }, 1600); }
+    catch (_) { if (status) status.textContent = `Discord handle: ${discord}`; }
+  });
+  const form = document.getElementById('brief-form');
+  form?.addEventListener('submit', async event => {
+    event.preventDefault(); if (!form.reportValidity()) return;
+    const values = new FormData(form);
+    const brief = `New Project Inquiry\nYouTube Channel: ${String(values.get('channel')).trim()}\nChannel Size: ${values.get('channelSize')}\nHandle: ${String(values.get('handle')).trim()}\nDeadline: ${values.get('deadline') || 'To discuss'}\nDetails: ${String(values.get('details')).trim()}`;
+    try { await writeClipboard(brief); status.textContent = `Brief copied. Paste it into a Discord DM to ${content?.contact?.discord || 'larzyfx'}.`; }
+    catch (_) { status.textContent = 'Clipboard unavailable. Select and copy your brief below.'; const output = document.createElement('textarea'); output.className = 'span-2'; output.value = brief; output.setAttribute('aria-label', 'Your project brief'); output.rows = 10; form.append(output); output.focus(); output.select(); }
+  });
+  form?.addEventListener('reset', () => { if (status) status.textContent = `After copying, paste your brief into a Discord DM to ${content?.contact?.discord || 'larzyfx'}.`; form.querySelector('textarea[aria-label="Your project brief"]')?.remove(); });
 });

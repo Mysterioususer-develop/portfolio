@@ -1,22 +1,40 @@
-name: Deploy to GitHub Pages
+name: Deploy Larzy to GitHub Pages
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          persist-credentials: false
 
-      - name: Deploy to gh-pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Prepare public site
+        run: |
+          mkdir -p site
+          cp index.html portfolio.html about.html contact.html styles.css script.js site/
+          cp -R assets data site/
+          touch site/.nojekyll
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+      - name: Upload public site
+        uses: actions/upload-pages-artifact@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: ./
-          # optional: exclude files/folders by adding `exclude` entries if needed
+          path: ./site
+      - name: Deploy public site
+        id: deployment
+        uses: actions/deploy-pages@v4
