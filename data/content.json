@@ -9,9 +9,9 @@
     "primaryCta": "View Work",
     "secondaryCta": "Start a project",
     "heroImages": [
-      "assets/thumbnails/freshi4-min.png",
       "assets/thumbnails/systemzee3.png",
       "assets/thumbnails/sagi1.png",
+      "assets/thumbnails/freshi4-min.png",
       "assets/thumbnails/VivillyPoppy.png",
       "assets/thumbnails/syszee.png",
       "assets/thumbnails/MIDMYSTIC.png",
@@ -146,13 +146,13 @@
   },
   "work": [
     {
-      "src": "assets/thumbnails/systemzee3.png",
-      "label": "@SystemZee",
+      "src": "assets/thumbnails/freshi4-min.png",
+      "label": "@Freshi",
       "alt": ""
     },
     {
-      "src": "assets/thumbnails/freshi4-min.png",
-      "label": "@Freshi",
+      "src": "assets/thumbnails/systemzee3.png",
+      "label": "@SystemZee",
       "alt": ""
     },
     {
