@@ -26,20 +26,9 @@ Use the up/down controls to reorder items; they work with keyboard and touch. Up
 
 ## Publish to GitHub and the domain
 
-This repo's `origin` is `https://github.com/Mysterioususer-develop/portfolio.git`. Its workflow runs after pushes to `main`, copies only the public HTML, CSS, JavaScript, `assets/`, and `data/` into a clean publishing folder, then deploys that folder with GitHub Pages. It does not publish the editor, admin server, or `node_modules`.
+The production site is hosted by the Vercel project `portfolio-eaj7` at [www.larzyfx.com](https://www.larzyfx.com/). Vercel is connected to this repository's `main` branch and creates a production deployment when a new commit is pushed. GitHub Pages is a separate copy; its workflow and status do not control the custom domain.
 
-**First, push this admin feature and workflow once from the terminal:**
-
-```powershell
-git status
-git add -- index.html portfolio.html about.html contact.html styles.css script.js data/content.json assets/uploads/.gitkeep admin/admin.html admin/admin.css admin/admin.js admin/server.js admin/start.ps1 start-admin.bat .github/workflows/deploy.yml README.md
-git commit -m "Add local portfolio editor"
-git push origin main
-```
-
-Review `git status` before committing. Add any other intended website changes or new images separately. These commands require your GitHub credentials or an already authenticated Git client.
-
-**For later content edits:** make edits and click **Publish to GitHub**. The editor saves first, commits only `data/content.json` and `assets/uploads/`, and pushes `main`. If the push fails after the commit, fix Git access and run `git push origin main` in PowerShell. The button never commits other code changes. To disable publishing for one session, set `$env:ENABLE_GIT_PUBLISH='false'` before running the launcher.
+Make edits in the local admin page, then click **Publish to GitHub**. The editor saves first, commits only `data/content.json` and `assets/uploads/`, and pushes `main`. Check the Vercel project's **Deployments** page for the build and visit the domain once its status is **Ready**. If the push fails after the local commit, fix Git access and run `git push origin main` in PowerShell. The button never commits other code changes. To disable publishing for one session, set `$env:ENABLE_GIT_PUBLISH='false'` before running the launcher.
 
 You can also publish content manually:
 
@@ -49,7 +38,7 @@ git commit -m "Update portfolio content"
 git push origin main
 ```
 
-In GitHub, open the repository's **Settings → Pages** and set **Build and deployment → Source** to **GitHub Actions**. This is required once for the new workflow. Check the **Actions** tab for the deployment run and the Pages settings for the live URL. If your custom domain is already connected to GitHub Pages, it updates after the deployment completes; changing content does not require another DNS change. If the domain points to a different host, configure that host to deploy this repository's `main` branch instead.
+The GitHub Pages workflow also runs on pushes to `main` and publishes a copy at `https://mysterioususer-develop.github.io/portfolio/`. Its success or failure does not indicate whether Vercel updated `www.larzyfx.com`.
 
 ## Static preview without the editor
 
