@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       button.append(img);
       const meta = document.createElement('div'); meta.className = 'work-meta';
       const name = document.createElement('span'); name.textContent = `${String(index + 1).padStart(2, '0')} / ${creator}`;
-      const type = document.createElement('span'); type.textContent = 'Minecraft thumbnail ↗'; meta.append(name, type);
+      const arrow = document.createElement('span'); arrow.textContent = '↗'; meta.append(name, arrow);
       article.append(button, meta); return article;
     }));
     const count = document.getElementById('work-count'); if (count) count.textContent = items.length;
