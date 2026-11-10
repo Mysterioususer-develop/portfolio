@@ -12,8 +12,6 @@ if ($env:ADMIN_PASSWORD.Length -lt 12) {
   exit 1
 }
 
-if (-not $env:ENABLE_GIT_PUBLISH) { $env:ENABLE_GIT_PUBLISH = 'true' }
-
 if (-not (Test-Path 'node_modules/express')) {
   npm install
   if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

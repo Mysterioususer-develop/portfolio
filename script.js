@@ -184,7 +184,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const count = document.getElementById('work-count'); if (count) count.textContent = items.length;
     const showMore = document.getElementById('show-more');
     if (showMore) {
-      const limit = Number(grid.dataset.limit) || 8;
+      const limit = Number(grid.dataset.limit) || 9;
       let expanded = false;
       const update = () => { grid.querySelectorAll('.work-card').forEach((card, i) => { card.hidden = !expanded && i >= limit; }); showMore.hidden = items.length <= limit; showMore.setAttribute('aria-expanded', String(expanded)); showMore.textContent = expanded ? 'Show less work ↑' : 'Show more work ↓'; };
       showMore.addEventListener('click', () => { expanded = !expanded; update(); }); update();

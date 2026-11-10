@@ -1,5 +1,5 @@
 (() => {
-  const state = { token: sessionStorage.getItem('larzyAdminToken') || '', content: null, dirty: false, publishEnabled: false };
+  const state = { token: sessionStorage.getItem('larzyAdminToken') || '', content: null, dirty: false };
   const $ = selector => document.querySelector(selector);
   const escape = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
   const imageURL = src => !src ? '' : /^https:\/\//i.test(src) ? src : `../${src.replace(/^\//, '')}`;
@@ -55,9 +55,8 @@
   function signOut() { state.token = ''; sessionStorage.removeItem('larzyAdminToken'); $('#app').hidden = true; $('#login-screen').hidden = false; }
   async function load() {
     const data = await request('/api/content');
-    state.content = data.content; state.publishEnabled = data.publishEnabled;
-    $('#btn-publish').disabled = !data.publishEnabled;
-    $('#btn-publish').title = data.publishEnabled ? 'Push saved content to GitHub' : 'Git publishing was disabled for this session';
+    state.content = data.content;
+    $('#btn-publish').disabled = false;
     render(); markSaved(); showEditor();
   }
   function field(label, path, kind = '') {
@@ -174,7 +173,6 @@
     } catch (error) { toast(error.message, true); return false; }
   }
   async function publish() {
-    if (!state.publishEnabled) return;
     if (state.dirty && !(await save())) return;
     $('#btn-publish').disabled = true; $('#save-state').textContent = 'Publishing…';
     try { const result = await request('/api/publish', { method: 'POST' }); toast(result.message); $('#save-state').textContent = 'Published to GitHub'; }

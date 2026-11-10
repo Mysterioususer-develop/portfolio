@@ -11,7 +11,6 @@ const contentPath = path.join(root, 'data', 'content.json');
 const uploadsPath = path.join(root, 'assets', 'uploads');
 const password = process.env.ADMIN_PASSWORD;
 const port = Number(process.env.PORT) || 3000;
-const publishEnabled = process.env.ENABLE_GIT_PUBLISH !== 'false';
 const sessions = new Map();
 const app = express();
 
@@ -69,7 +68,7 @@ app.post('/api/login', (req, res) => {
 });
 
 app.get('/api/content', authenticate, async (_req, res) => {
-  try { res.json({ content: JSON.parse(await fs.readFile(contentPath, 'utf8')), publishEnabled }); }
+  try { res.json({ content: JSON.parse(await fs.readFile(contentPath, 'utf8')) }); }
   catch (error) { console.error(error); res.status(500).json({ error: 'Could not read site content.' }); }
 });
 
@@ -95,17 +94,15 @@ app.post('/api/upload', authenticate, upload.single('file'), async (req, res) =>
 });
 
 app.post('/api/publish', authenticate, async (_req, res) => {
-  if (!publishEnabled) return res.status(403).json({ error: 'Git publishing is off. Start the editor without ENABLE_GIT_PUBLISH=false to enable it.' });
   try {
     const branch = await git('branch', '--show-current');
     if (branch !== 'main') return res.status(409).json({ error: `Switch to main before publishing. Current branch: ${branch || '(detached)'}.` });
     await git('add', '-A', '--', 'data/content.json', 'assets/uploads');
     const changed = await git('diff', '--cached', '--name-only', '--', 'data/content.json', 'assets/uploads');
-    if (!changed) return res.json({ ok: true, message: 'No saved content changes to publish.' });
-    await git('commit', '-m', 'Update portfolio content', '--only', '--', 'data/content.json', 'assets/uploads');
+    if (changed) await git('commit', '-m', 'Update portfolio content', '--only', '--', 'data/content.json', 'assets/uploads');
     try {
       await git('push', 'origin', 'main');
-      res.json({ ok: true, message: 'Pushed to GitHub. The Pages workflow will update the website after it finishes.' });
+      res.json({ ok: true, message: changed ? 'Pushed to GitHub. Vercel will update the site after deployment finishes.' : 'GitHub is up to date. There are no new content changes to publish.' });
     } catch (error) {
       res.status(502).json({ error: `Saved in a local Git commit, but the push failed: ${error.message}. Run git push origin main after fixing access.` });
     }

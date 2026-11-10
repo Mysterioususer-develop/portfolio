@@ -14,7 +14,7 @@ The editor requires Node.js. The startup script installs the existing npm depend
 
 - **Home hero:** title, description, and button labels.
 - **Hero images:** choose and reorder the thumbnails in the moving wall.
-- **Work:** add, edit, remove, upload, and reorder thumbnails. The first eight are shown in Selected Work; the full ordered list appears on the portfolio page.
+- **Work:** add, edit, remove, upload, and reorder thumbnails. The first nine are shown in Selected Work; the full ordered list appears on the portfolio page.
 - **Trusted By:** edit creator names, subscriber labels, avatars, and order. The first three rows appear before the expand button.
 - **Reviews:** edit quotes, authors, avatars, and order.
 - **Approach:** edit and reorder the vertical steps and their images.
@@ -28,7 +28,7 @@ Use the up/down controls to reorder items; they work with keyboard and touch. Up
 
 The production site is hosted by the Vercel project `portfolio-eaj7` at [www.larzyfx.com](https://www.larzyfx.com/). Vercel is connected to this repository's `main` branch and creates a production deployment when a new commit is pushed. GitHub Pages is a separate copy; its workflow and status do not control the custom domain.
 
-Make edits in the local admin page, then click **Publish to GitHub**. The editor saves first, commits only `data/content.json` and `assets/uploads/`, and pushes `main`. Check the Vercel project's **Deployments** page for the build and visit the domain once its status is **Ready**. If the push fails after the local commit, fix Git access and run `git push origin main` in PowerShell. The button never commits other code changes. To disable publishing for one session, set `$env:ENABLE_GIT_PUBLISH='false'` before running the launcher.
+Make edits in the local admin page, then click **Publish to GitHub**. The editor saves first, commits only `data/content.json` and `assets/uploads/`, and pushes `main`. Check the Vercel project's **Deployments** page for the build and visit the domain once its status is **Ready**. If the push fails after the local commit, fix Git access and click Publish again to retry. The button never commits other code changes.
 
 You can also publish content manually:
 
