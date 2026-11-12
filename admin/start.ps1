@@ -1,14 +1,14 @@
 Set-Location (Split-Path -Parent $PSScriptRoot)
 
 if (-not $env:ADMIN_PASSWORD) {
-  $secret = Read-Host 'Choose a local admin password (12+ characters)' -AsSecureString
+  $secret = Read-Host 'Choose a local admin password (5+ characters)' -AsSecureString
   $pointer = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($secret)
   try { $env:ADMIN_PASSWORD = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($pointer) }
   finally { [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($pointer) }
 }
 
-if ($env:ADMIN_PASSWORD.Length -lt 12) {
-  Write-Error 'The admin password needs at least 12 characters.'
+if ($env:ADMIN_PASSWORD.Length -lt 5) {
+  Write-Error 'The admin password needs at least 5 characters.'
   exit 1
 }
 

@@ -14,8 +14,8 @@ const port = Number(process.env.PORT) || 3000;
 const sessions = new Map();
 const app = express();
 
-if (!password || password.length < 12) {
-  console.error('Set ADMIN_PASSWORD to a unique password of at least 12 characters before starting the admin server.');
+if (!password || password.length < 5) {
+  console.error('Set ADMIN_PASSWORD to a unique password of at least 5 characters before starting the admin server.');
   process.exit(1);
 }
 

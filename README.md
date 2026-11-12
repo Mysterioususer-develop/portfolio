@@ -5,7 +5,7 @@ A static HTML, CSS, and JavaScript portfolio. The public site reads its artwork,
 ## Run the editor on Windows
 
 1. Open PowerShell in this folder and run `./start-admin.bat` (or double-click the file).
-2. Choose a local password of at least 12 characters. The prompt hides what you type. The password is kept only in that terminal session.
+2. Choose a local password of at least 5 characters. The prompt hides what you type. The password is kept only in that terminal session.
 3. Open `http://127.0.0.1:3000/admin` and sign in. The **Publish to GitHub** button is enabled by default; it needs working GitHub push access on this computer. Use **Preview site** to open the local website.
 
 The editor requires Node.js. The startup script installs the existing npm dependencies if they are missing. The admin server listens only on `127.0.0.1`; do not deploy or expose it on the public internet.
