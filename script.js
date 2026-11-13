@@ -168,8 +168,32 @@ document.addEventListener('DOMContentLoaded', async () => {
       const li = document.createElement('li'), copy = document.createElement('div'), label = document.createElement('span'), title = document.createElement('h3'), body = document.createElement('p'), img = document.createElement('img');
       copy.className = 'process-copy'; label.textContent = step.label || ''; title.textContent = step.title || ''; body.textContent = step.body || '';
       img.src = assetPath(step.image); img.alt = step.alt || `Minecraft artwork for ${step.title || 'the process'}`; img.width = 1920; img.height = 1080; img.loading = 'lazy';
-      copy.append(label, title, body); li.append(copy, img); return li;
+      copy.append(label, title, body);
+      if (step.title?.trim().toLowerCase() === 'brief') {
+        const demo = document.createElement('div');
+        demo.className = 'brief-demo';
+        demo.setAttribute('role', 'group');
+        demo.setAttribute('aria-label', 'Example project brief conversation');
+        demo.innerHTML = `
+          <div class="brief-demo-header"><span>Example conversation</span><span>Brief / 01</span></div>
+          <div class="brief-message brief-message-creator brief-message-first"><span class="brief-speaker">Creator</span><p>I have a new Minecraft video. Could you design the thumbnail?</p></div>
+          <div class="brief-typing" aria-hidden="true"><i></i><i></i><i></i></div>
+          <div class="brief-message brief-message-larzy brief-message-second"><span class="brief-speaker">Larzy</span><p>Absolutely. What’s the idea, who’s watching, and when do you need it?</p></div>
+          <div class="brief-message brief-message-creator brief-message-third"><span class="brief-speaker">Creator</span><p>I’ll send the video idea, deadline, and a few references.</p></div>
+          <div class="brief-message brief-message-larzy brief-message-fourth"><span class="brief-speaker">Larzy</span><p>Perfect — that gives me a direction to start.</p><figure class="brief-attachment"><figcaption>Example artwork by Larzy</figcaption></figure></div>`;
+        demo.querySelector('.brief-attachment').append(img);
+        li.append(copy, demo);
+      } else li.append(copy, img);
+      return li;
     }));
+    const demo = list.querySelector('.brief-demo');
+    if (demo && !reducedMotion.matches && 'IntersectionObserver' in window) {
+      demo.dataset.animate = 'true';
+      const observer = new IntersectionObserver(entries => {
+        if (entries.some(entry => entry.isIntersecting)) { demo.classList.add('is-playing'); observer.disconnect(); }
+      }, { threshold: .25 });
+      observer.observe(demo);
+    }
   }
   function renderWork(items) {
     const grid = document.getElementById('work-grid');

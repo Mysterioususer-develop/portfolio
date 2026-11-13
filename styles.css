@@ -232,3 +232,32 @@ body:has(dialog[open]){overflow:hidden}
 @media(max-width:1100px){.clients{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:760px){.process-list li,.process-list li+li,.process-list li:last-child{grid-template-columns:1fr;gap:25px;min-height:0;padding:65px 0}.process-list li h3{font-size:clamp(62px,12vw,95px)}.process-list li p{margin-bottom:0}.lightbox{padding:68px 18px 85px}.lightbox img{max-height:calc(100dvh - 180px)}.lightbox-close{top:16px;right:17px}.lightbox-arrow{top:auto;bottom:15px;transform:none}.lightbox-arrow:hover{transform:scale(1.06)}.lightbox-prev{left:calc(50% - 62px)}.lightbox-next{right:calc(50% - 62px)}}
 @media(max-width:520px){.clients{grid-template-columns:repeat(2,minmax(0,1fr))}.review-card{flex-basis:min(86vw,400px);height:355px}.review-card p{font-size:17px}.review-card-long p{font-size:15px}.process-list li,.process-list li+li,.process-list li:last-child{width:auto;padding:55px 0}.project-dialog{max-height:calc(100dvh - 26px)}}
+
+/* Brief step: an illustrative conversation that reveals as the step enters view. */
+.brief-demo{display:flex;flex-direction:column;gap:10px;min-height:440px;width:100%;padding:22px;border:1px solid #8c6b9c;border-radius:16px;background:#2a1d35;box-shadow:0 25px 70px #09051266;overflow:hidden}
+.brief-demo-header{display:flex;justify-content:space-between;gap:12px;margin-bottom:12px;padding-bottom:13px;border-bottom:1px solid #725580;text-transform:uppercase;letter-spacing:.13em}
+.process-list li .brief-demo-header span{color:#c5abc9;font:700 10px/1.4 var(--body)}
+.process-list li .brief-demo-header span:last-child{color:#f0add5}
+.brief-message{max-width:81%;padding:12px 15px;border:1px solid #785d86;border-radius:15px;background:#3d2b49;box-shadow:0 8px 22px #10091545}
+.brief-message-creator{align-self:flex-start;border-top-left-radius:4px}
+.brief-message-larzy{align-self:flex-end;border-color:#a77cb4;border-top-right-radius:4px;background:#674479}
+.process-list li .brief-speaker{display:block;margin-bottom:4px;color:#e6c9e9;font:700 10px/1.3 var(--body);letter-spacing:.1em;text-transform:uppercase}
+.process-list li .brief-message p{max-width:none;margin:0;color:#fff8ff;font:500 14px/1.45 var(--body)}
+.brief-attachment{margin:11px 0 0}
+.brief-attachment figcaption{margin-bottom:6px;color:#f1dcec;font:600 10px/1.3 var(--body);letter-spacing:.06em;text-transform:uppercase}
+.process-list li .brief-attachment img{position:static;display:block;width:min(190px,100%);height:auto;aspect-ratio:16/9;transform:none;opacity:1;border:1px solid #d3b2dc;border-radius:8px;box-shadow:none;object-fit:cover}
+.brief-typing{align-self:flex-end;display:flex;align-items:center;gap:4px;height:24px;margin:-2px 5px -9px 0;padding:0 11px;border-radius:13px;background:#674479;opacity:0}
+.brief-typing i{width:5px;height:5px;border-radius:50%;background:#f5e6f7;animation:brief-dot .7s ease-in-out infinite alternate}
+.brief-typing i:nth-child(2){animation-delay:.16s}.brief-typing i:nth-child(3){animation-delay:.32s}
+@keyframes brief-dot{to{opacity:.35;transform:translateY(-2px)}}
+@keyframes brief-enter{to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes brief-type{0%,100%{opacity:0}18%,78%{opacity:1}}
+.brief-demo[data-animate="true"] .brief-message{opacity:0;transform:translateY(12px) scale(.98)}
+.brief-demo[data-animate="true"].is-playing .brief-message{animation:brief-enter .5s cubic-bezier(.2,.8,.2,1) forwards}
+.brief-demo[data-animate="true"].is-playing .brief-message-first{animation-delay:.12s}
+.brief-demo[data-animate="true"].is-playing .brief-message-second{animation-delay:1.55s}
+.brief-demo[data-animate="true"].is-playing .brief-message-third{animation-delay:2.35s}
+.brief-demo[data-animate="true"].is-playing .brief-message-fourth{animation-delay:3.15s}
+.brief-demo.is-playing .brief-typing{animation:brief-type 1.05s .65s both}
+@media(max-width:760px){.brief-demo{min-height:0;padding:16px;gap:9px}.brief-demo-header{margin-bottom:6px}.brief-message{max-width:88%;padding:10px 12px}.process-list li .brief-message p{font-size:13px}.process-list li .brief-attachment img{width:min(175px,100%)}}
+@media(prefers-reduced-motion:reduce){.brief-demo[data-animate="true"] .brief-message{opacity:1;transform:none;animation:none}.brief-typing{display:none}}
