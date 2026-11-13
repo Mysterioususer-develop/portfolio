@@ -81,8 +81,12 @@
       const options = choices.map(item => `<option value="${escape(item.src)}" ${item.src === src ? 'selected' : ''}>${escape(item.label || 'Untitled')} / ${escape(item.src.split('/').pop())}</option>`).join('');
       const extra = !choices.some(item => item.src === src) ? `<option value="${escape(src)}" selected>${escape(src || 'Choose artwork')}</option>` : '';
       const column = ['Left', 'Middle', 'Right'][index % 3];
-      return `<div class="entry hero-entry" data-list="heroImages" data-index="${index}"><span class="entry-number">${String(index + 1).padStart(2, '0')}</span><img src="${escape(imageURL(src))}" alt="Hero image ${index + 1}" loading="lazy"><label class="field"><span>${column} column / row ${Math.floor(index / 3) + 1}</span><select data-hero-index="${index}">${extra}${options}</select></label>${controls(index, state.content.home.heroImages.length)}</div>`;
+      return `<div class="entry hero-entry" data-list="heroImages" data-index="${index}">${sortMarker('heroImages', index)}<img src="${escape(imageURL(src))}" alt="Hero image ${index + 1}" data-drag-target draggable="false" loading="lazy"><label class="field"><span>${column} column / row ${Math.floor(index / 3) + 1}</span><select data-hero-index="${index}">${extra}${options}</select></label>${controls(index, state.content.home.heroImages.length)}</div>`;
     }).join('');
+  }
+  function sortMarker(kind, index) {
+    const name = kind === 'work' ? 'thumbnail' : 'hero image';
+    return `<div class="entry-sort"><button type="button" class="drag-handle" data-drag-target aria-label="Reorder ${name} ${index + 1}; press Up or Down to move" title="Drag to reorder"><span aria-hidden="true">⋮⋮</span></button><span class="entry-number">${String(index + 1).padStart(2, '0')}</span></div>`;
   }
   function controls(index, length) {
     return `<div class="entry-controls"><button type="button" data-action="up" aria-label="Move item ${index + 1} up" ${index === 0 ? 'disabled' : ''}>↑</button><button type="button" data-action="down" aria-label="Move item ${index + 1} down" ${index === length - 1 ? 'disabled' : ''}>↓</button><button type="button" data-action="remove" aria-label="Remove item ${index + 1}">×</button></div>`;
@@ -102,7 +106,7 @@
     $(`#${kind}-list`).innerHTML = list.map((item, index) => {
       const src = imageFor(item, kind);
       const summary = kind === 'reviews' ? item.quote : kind === 'process' ? item.body : kind === 'clients' ? item.subs : item.src;
-      return `<article class="entry" data-list="${kind}" data-index="${index}"><span class="entry-number">${String(index + 1).padStart(2, '0')}</span><img class="entry-image ${kind === 'work' || kind === 'process' ? 'wide' : ''} ${kind === 'process' && item.showImage === false ? 'image-not-shown' : ''}" src="${escape(imageURL(src))}" alt="${escape(labelFor(item, kind) || 'Image preview')}" ${kind === 'process' && item.showImage === false ? 'title="Hidden on the site"' : ''} loading="lazy"><div class="entry-info"><strong>${escape(labelFor(item, kind) || 'New item')}</strong><span>${escape(summary || 'Add details below')}</span></div>${controls(index, list.length)}<details><summary>Edit details</summary><div class="field-grid">${fieldsByList[kind].map(([label, key, type]) => `<label class="field ${type === 'long' ? 'span-all' : ''}"><span>${escape(label)}</span>${type === 'long' ? `<textarea data-field="${key}" rows="4">${escape(item[key] || '')}</textarea>` : `<input data-field="${key}" value="${escape(item[key] || '')}">`}</label>`).join('')}<div class="entry-detail-actions"><button class="button button-outline" type="button" data-action="upload">Upload / replace image</button></div>${kind === 'process' ? conversationEditor(item) : ''}</div></details></article>`;
+      return `<article class="entry" data-list="${kind}" data-index="${index}">${kind === 'work' ? sortMarker(kind, index) : `<span class="entry-number">${String(index + 1).padStart(2, '0')}</span>`}<img class="entry-image ${kind === 'work' || kind === 'process' ? 'wide' : ''} ${kind === 'process' && item.showImage === false ? 'image-not-shown' : ''}" src="${escape(imageURL(src))}" alt="${escape(labelFor(item, kind) || 'Image preview')}" ${kind === 'work' ? 'data-drag-target draggable="false"' : ''} ${kind === 'process' && item.showImage === false ? 'title="Hidden on the site"' : ''} loading="lazy"><div class="entry-info"><strong>${escape(labelFor(item, kind) || 'New item')}</strong><span>${escape(summary || 'Add details below')}</span></div>${controls(index, list.length)}<details><summary>Edit details</summary><div class="field-grid">${fieldsByList[kind].map(([label, key, type]) => `<label class="field ${type === 'long' ? 'span-all' : ''}"><span>${escape(label)}</span>${type === 'long' ? `<textarea data-field="${key}" rows="4">${escape(item[key] || '')}</textarea>` : `<input data-field="${key}" value="${escape(item[key] || '')}">`}</label>`).join('')}<div class="entry-detail-actions"><button class="button button-outline" type="button" data-action="upload">Upload / replace image</button></div>${kind === 'process' ? conversationEditor(item) : ''}</div></details></article>`;
     }).join('');
   }
   function render() {
@@ -132,14 +136,90 @@
     if (key === 'src' || key === 'avatar' || key === 'image') entry.querySelector('.entry-image').src = imageURL(value);
     if (oldPath) replaceImageReferences(oldPath, value);
   }
-  function changeOrder(kind, index, direction) {
+  function changeOrder(kind, index, direction, focusHandle = false) {
     const list = kind === 'heroImages' ? state.content.home.heroImages : listPath(kind);
     const other = index + direction;
     if (other < 0 || other >= list.length) return;
     [list[index], list[other]] = [list[other], list[index]];
     markDirty(); renderOne(kind);
-    $(`#${kind === 'heroImages' ? 'hero' : kind}-list .entry[data-index="${other}"] [data-action="${direction < 0 ? 'down' : 'up'}"]`)?.focus();
+    const moved = $(`#${kind === 'heroImages' ? 'hero' : kind}-list .entry[data-index="${other}"]`);
+    moved?.querySelector(focusHandle ? '.drag-handle' : `[data-action="${direction < 0 ? 'down' : 'up'}"]`)?.focus();
   }
+  function reorder(kind, from, to) {
+    if (from === to) return;
+    const list = kind === 'heroImages' ? state.content.home.heroImages : listPath(kind);
+    list.splice(to, 0, list.splice(from, 1)[0]);
+    markDirty(); renderOne(kind);
+    if (kind === 'work') renderHero();
+  }
+  let dragState = null;
+  function dragList(kind) { return $(`#${kind === 'heroImages' ? 'hero' : kind}-list`); }
+  function clearDropMarker() { dragList(dragState.kind)?.querySelectorAll('.drop-before,.drop-after').forEach(entry => entry.classList.remove('drop-before', 'drop-after')); }
+  function updateDropMarker() {
+    const drag = dragState, list = dragList(drag.kind), entries = [...list.querySelectorAll(':scope > .entry')];
+    clearDropMarker();
+    const bounds = list.getBoundingClientRect();
+    if (drag.x < bounds.left - 30 || drag.x > bounds.right + 30) { drag.position = null; return; }
+    let position = entries.findIndex(entry => drag.y < entry.getBoundingClientRect().top + entry.getBoundingClientRect().height / 2);
+    if (position < 0) position = entries.length;
+    drag.position = position;
+    const marker = entries[Math.min(position, entries.length - 1)];
+    marker?.classList.add(position === entries.length ? 'drop-after' : 'drop-before');
+  }
+  function autoScrollDrag() {
+    if (!dragState?.active) return;
+    const margin = 90;
+    if (dragState.y < margin) window.scrollBy({ top: -10, behavior: 'instant' });
+    else if (dragState.y > innerHeight - margin) window.scrollBy({ top: 10, behavior: 'instant' });
+    updateDropMarker();
+    dragState.frame = requestAnimationFrame(autoScrollDrag);
+  }
+  function finishDrag(commit) {
+    const drag = dragState; if (!drag) return;
+    cancelAnimationFrame(drag.frame);
+    if (drag.target.hasPointerCapture?.(drag.pointerId)) drag.target.releasePointerCapture(drag.pointerId);
+    drag.source.classList.remove('is-dragging');
+    drag.preview?.remove();
+    clearDropMarker(); document.body.classList.remove('is-sorting');
+    dragState = null;
+    if (commit && drag.active && drag.position != null) {
+      const to = drag.position > drag.from ? drag.position - 1 : drag.position;
+      reorder(drag.kind, drag.from, to);
+    }
+  }
+  document.addEventListener('pointerdown', event => {
+    const target = event.target.closest('[data-drag-target]');
+    const source = target?.closest('.entry');
+    const kind = source?.dataset.list;
+    if (dragState || !['work', 'heroImages'].includes(kind) || (event.pointerType === 'mouse' && event.button !== 0)) return;
+    dragState = { kind, from: Number(source.dataset.index), pointerId: event.pointerId, target, source, startX: event.clientX, startY: event.clientY, x: event.clientX, y: event.clientY, position: null, active: false, frame: 0, preview: null };
+    target.setPointerCapture?.(event.pointerId);
+  });
+  document.addEventListener('pointermove', event => {
+    const drag = dragState; if (!drag || event.pointerId !== drag.pointerId) return;
+    drag.x = event.clientX; drag.y = event.clientY;
+    if (!drag.active && Math.hypot(drag.x - drag.startX, drag.y - drag.startY) < 6) return;
+    if (!drag.active) {
+      drag.active = true; drag.source.classList.add('is-dragging'); document.body.classList.add('is-sorting');
+      const preview = document.createElement('div'); preview.className = 'drag-preview';
+      const image = drag.source.querySelector('img'); if (image?.src) { const thumb = image.cloneNode(); thumb.alt = ''; preview.append(thumb); }
+      const label = document.createElement('span'); label.textContent = drag.kind === 'work' ? drag.source.querySelector('.entry-info strong')?.textContent || 'Thumbnail' : `Hero image ${drag.from + 1}`;
+      preview.append(label); document.body.append(preview); drag.preview = preview;
+      drag.frame = requestAnimationFrame(autoScrollDrag);
+    }
+    drag.preview.style.left = `${drag.x + 14}px`; drag.preview.style.top = `${drag.y + 14}px`;
+    updateDropMarker();
+  });
+  document.addEventListener('pointerup', event => { if (dragState && event.pointerId === dragState.pointerId) finishDrag(true); });
+  document.addEventListener('pointercancel', event => { if (dragState && event.pointerId === dragState.pointerId) finishDrag(false); });
+  window.addEventListener('blur', () => finishDrag(false));
+  document.addEventListener('keydown', event => {
+    const handle = event.target.closest('.drag-handle');
+    if (!handle || !['ArrowUp', 'ArrowDown'].includes(event.key)) return;
+    event.preventDefault();
+    const entry = handle.closest('.entry');
+    changeOrder(entry.dataset.list, Number(entry.dataset.index), event.key === 'ArrowUp' ? -1 : 1, true);
+  });
   function add(kind) {
     if (kind === 'heroImages') {
       const unused = state.content.work.find(item => item.src && !state.content.home.heroImages.includes(item.src));
