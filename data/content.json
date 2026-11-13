@@ -89,7 +89,8 @@
             "speaker": "Larzy",
             "text": "Perfect, I'll go ahead and create a concept for your video!"
           }
-        ]
+        ],
+        "showImage": false
       },
       {
         "label": "02 / Find the idea",
@@ -288,6 +289,11 @@
       "src": "assets/thumbnails/AStrangeCreature.png",
       "label": "@AStrangeCreature",
       "alt": "Minecraft thumbnail 15"
+    },
+    {
+      "label": "@Bara",
+      "src": "assets/uploads/9cccdae5c3ea9a45c64c5f81.png",
+      "alt": ""
     },
     {
       "src": "assets/thumbnails/starthork2.png",
