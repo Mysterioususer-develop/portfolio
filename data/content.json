@@ -1,11 +1,11 @@
 {
   "home": {
-    "heroTag": "Minecraft Thumbnail Artist",
+    "heroTag": "",
     "heroTitleLine1": "Thumbnails",
     "heroTitleLine2": "That",
     "heroTitleAccent": "Attract",
     "heroTitleLine3": "Viewers",
-    "heroDescription": "Hey, I'm larzy, a Minecraft Thumbnail designer with over 2 years of experience in the field. Each thumbnail I create is directed towards your audience to ensure maximum clicks.",
+    "heroDescription": "Hey, I'm larzy, a Minecraft Thumbnail designer with over 3 years of experience in the field. Each thumbnail I create is directed towards your audience to ensure maximum clicks.",
     "primaryCta": "View Work",
     "secondaryCta": "Start a project",
     "heroImages": [
@@ -76,21 +76,21 @@
         "label": "02 / Find the idea",
         "title": "Concept",
         "body": "We agree on a visual direction and the strongest idea for your story.",
-        "image": "assets/thumbnails/wisp.png",
+        "image": "assets/uploads/b69b9c6943b7f7ac51dbbb85.png",
         "alt": "Minecraft thumbnail concept for Wisp"
       },
       {
         "label": "03 / Make the image",
         "title": "Build",
         "body": "I create the thumbnail, shaping the composition, lighting, and details.",
-        "image": "assets/thumbnails/VivillyPoppy.png",
+        "image": "assets/uploads/4566a408fd0fc866db2c116f.png",
         "alt": "Completed Minecraft artwork for Vivilly"
       },
       {
         "label": "04 / Ready to upload",
         "title": "Final",
         "body": "We review the finished image and prepare the final thumbnail for delivery.",
-        "image": "assets/thumbnails/gold.png",
+        "image": "assets/uploads/1b918b15cd995667e851e1f0.png",
         "alt": "Finished Minecraft thumbnail for GoldActual"
       }
     ]
