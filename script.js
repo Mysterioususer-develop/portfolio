@@ -169,19 +169,39 @@ document.addEventListener('DOMContentLoaded', async () => {
       copy.className = 'process-copy'; label.textContent = step.label || ''; title.textContent = step.title || ''; body.textContent = step.body || '';
       img.src = assetPath(step.image); img.alt = step.alt || `Minecraft artwork for ${step.title || 'the process'}`; img.width = 1920; img.height = 1080; img.loading = 'lazy';
       copy.append(label, title, body);
-      if (step.title?.trim().toLowerCase() === 'brief') {
+      if (Array.isArray(step.conversation)) {
         const demo = document.createElement('div');
         demo.className = 'brief-demo';
         demo.setAttribute('role', 'group');
         demo.setAttribute('aria-label', 'Example project brief conversation');
-        demo.innerHTML = `
-          <div class="brief-demo-header"><span>Example conversation</span><span>Brief / 01</span></div>
-          <div class="brief-message brief-message-creator brief-message-first"><span class="brief-speaker">Creator</span><p>I have a new Minecraft video. Could you design the thumbnail?</p></div>
-          <div class="brief-typing" aria-hidden="true"><i></i><i></i><i></i></div>
-          <div class="brief-message brief-message-larzy brief-message-second"><span class="brief-speaker">Larzy</span><p>Absolutely. What’s the idea, who’s watching, and when do you need it?</p></div>
-          <div class="brief-message brief-message-creator brief-message-third"><span class="brief-speaker">Creator</span><p>I’ll send the video idea, deadline, and a few references.</p></div>
-          <div class="brief-message brief-message-larzy brief-message-fourth"><span class="brief-speaker">Larzy</span><p>Perfect — that gives me a direction to start.</p><figure class="brief-attachment"><figcaption>Example artwork by Larzy</figcaption></figure></div>`;
-        demo.querySelector('.brief-attachment').append(img);
+        demo.innerHTML = '<div class="brief-demo-header"><span>Example conversation</span><span>Brief / 01</span></div>';
+        let delay = .12;
+        step.conversation.forEach((line, index) => {
+          if (index) delay += .8;
+          if (line.speaker === 'Larzy' && index && step.conversation[index - 1]?.speaker !== 'Larzy') {
+            const typing = document.createElement('div');
+            typing.className = 'brief-typing'; typing.setAttribute('aria-hidden', 'true');
+            typing.style.setProperty('--brief-typing-delay', `${delay - .35}s`);
+            typing.innerHTML = '<i></i><i></i><i></i>';
+            demo.append(typing);
+            delay += .65;
+          }
+          const message = document.createElement('div');
+          message.className = `brief-message brief-message-${line.speaker === 'Larzy' ? 'larzy' : 'creator'}`;
+          message.style.setProperty('--brief-delay', `${delay}s`);
+          const speaker = document.createElement('span'); speaker.className = 'brief-speaker'; speaker.textContent = line.speaker;
+          const text = document.createElement('p'); text.textContent = line.text || '';
+          message.append(speaker, text);
+          if (index === step.conversation.length - 1) {
+            const attachment = document.createElement('figure'); attachment.className = 'brief-attachment';
+            if (step.conversationCaption) {
+              const caption = document.createElement('figcaption'); caption.textContent = step.conversationCaption;
+              attachment.append(caption);
+            }
+            attachment.append(img); message.append(attachment);
+          }
+          demo.append(message);
+        });
         li.append(copy, demo);
       } else li.append(copy, img);
       return li;

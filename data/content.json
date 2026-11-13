@@ -70,7 +70,26 @@
         "title": "Brief",
         "body": "Tell me about your video, audience, deadline, and references.",
         "image": "assets/thumbnails/freshi4-min.png",
-        "alt": "Minecraft scene showing the starting point of a story"
+        "alt": "Minecraft scene showing the starting point of a story",
+        "conversationCaption": "Example artwork by Larzy",
+        "conversation": [
+          {
+            "speaker": "Creator",
+            "text": "I have a new Minecraft video. Could you design the thumbnail?"
+          },
+          {
+            "speaker": "Larzy",
+            "text": "Absolutely. What’s the idea, who’s watching, and when do you need it?"
+          },
+          {
+            "speaker": "Creator",
+            "text": "I’ll send the video idea, deadline, and a few references."
+          },
+          {
+            "speaker": "Larzy",
+            "text": "Perfect — that gives me a direction to start."
+          }
+        ]
       },
       {
         "label": "02 / Find the idea",

@@ -93,12 +93,16 @@
     reviews: [['Reviewer', 'name'], ['Role or channel size', 'role'], ['Avatar path', 'avatar', 'image'], ['Review quote', 'quote', 'long']],
     process: [['Small label', 'label'], ['Step title', 'title'], ['Description', 'body', 'long'], ['Image path', 'image', 'image'], ['Image alt text', 'alt']]
   };
+  function conversationEditor(item) {
+    if (!Array.isArray(item.conversation)) return '';
+    return `<div class="conversation-editor"><div class="conversation-heading"><div><h4>Brief conversation</h4><p>Messages play in this order. The step image appears with the final message.</p></div><button class="button button-outline" type="button" data-message-action="add" ${item.conversation.length >= 12 ? 'disabled' : ''}>Add message +</button></div><label class="field"><span>Artwork caption</span><input data-conversation-caption value="${escape(item.conversationCaption || '')}"></label><div class="conversation-list">${item.conversation.map((message, index) => `<div class="conversation-entry" data-message-index="${index}"><span class="entry-number">${String(index + 1).padStart(2, '0')}</span><label class="field"><span>Speaker</span><select data-message-field="speaker"><option value="Creator" ${message.speaker === 'Creator' ? 'selected' : ''}>Creator</option><option value="Larzy" ${message.speaker === 'Larzy' ? 'selected' : ''}>Larzy</option></select></label><label class="field conversation-text"><span>Message</span><textarea data-message-field="text" rows="2">${escape(message.text || '')}</textarea></label><div class="conversation-controls"><button type="button" data-message-action="up" aria-label="Move message ${index + 1} up" ${index === 0 ? 'disabled' : ''}>↑</button><button type="button" data-message-action="down" aria-label="Move message ${index + 1} down" ${index === item.conversation.length - 1 ? 'disabled' : ''}>↓</button><button type="button" data-message-action="remove" aria-label="Remove message ${index + 1}" ${item.conversation.length === 1 ? 'disabled' : ''}>×</button></div></div>`).join('')}</div></div>`;
+  }
   function renderList(kind) {
     const list = listPath(kind);
     $(`#${kind}-list`).innerHTML = list.map((item, index) => {
       const src = imageFor(item, kind);
       const summary = kind === 'reviews' ? item.quote : kind === 'process' ? item.body : kind === 'clients' ? item.subs : item.src;
-      return `<article class="entry" data-list="${kind}" data-index="${index}"><span class="entry-number">${String(index + 1).padStart(2, '0')}</span><img class="entry-image ${kind === 'work' || kind === 'process' ? 'wide' : ''}" src="${escape(imageURL(src))}" alt="${escape(labelFor(item, kind) || 'Image preview')}" loading="lazy"><div class="entry-info"><strong>${escape(labelFor(item, kind) || 'New item')}</strong><span>${escape(summary || 'Add details below')}</span></div>${controls(index, list.length)}<details><summary>Edit details</summary><div class="field-grid">${fieldsByList[kind].map(([label, key, type]) => `<label class="field ${type === 'long' ? 'span-all' : ''}"><span>${escape(label)}</span>${type === 'long' ? `<textarea data-field="${key}" rows="4">${escape(item[key] || '')}</textarea>` : `<input data-field="${key}" value="${escape(item[key] || '')}">`}</label>`).join('')}<div class="entry-detail-actions"><button class="button button-outline" type="button" data-action="upload">Upload / replace image</button></div></div></details></article>`;
+      return `<article class="entry" data-list="${kind}" data-index="${index}"><span class="entry-number">${String(index + 1).padStart(2, '0')}</span><img class="entry-image ${kind === 'work' || kind === 'process' ? 'wide' : ''}" src="${escape(imageURL(src))}" alt="${escape(labelFor(item, kind) || 'Image preview')}" loading="lazy"><div class="entry-info"><strong>${escape(labelFor(item, kind) || 'New item')}</strong><span>${escape(summary || 'Add details below')}</span></div>${controls(index, list.length)}<details><summary>Edit details</summary><div class="field-grid">${fieldsByList[kind].map(([label, key, type]) => `<label class="field ${type === 'long' ? 'span-all' : ''}"><span>${escape(label)}</span>${type === 'long' ? `<textarea data-field="${key}" rows="4">${escape(item[key] || '')}</textarea>` : `<input data-field="${key}" value="${escape(item[key] || '')}">`}</label>`).join('')}<div class="entry-detail-actions"><button class="button button-outline" type="button" data-action="upload">Upload / replace image</button></div>${kind === 'process' ? conversationEditor(item) : ''}</div></details></article>`;
     }).join('');
   }
   function render() {
@@ -106,6 +110,12 @@
     renderHero(); for (const kind of Object.keys(fieldsByList)) renderList(kind); renderCopy();
   }
   function renderOne(kind) { if (kind === 'heroImages') renderHero(); else renderList(kind); }
+  function renderConversation(index, focusIndex) {
+    renderList('process');
+    const entry = $(`#process-list .entry[data-index="${index}"]`);
+    entry?.querySelector('details')?.setAttribute('open', '');
+    entry?.querySelector(`.conversation-entry[data-message-index="${focusIndex}"] textarea`)?.focus();
+  }
   function replaceImageReferences(oldPath, newPath) {
     if (!oldPath || oldPath === newPath) return;
     state.content.home.heroImages = state.content.home.heroImages.map(path => path === oldPath ? newPath : path);
@@ -164,6 +174,7 @@
     if (state.content.clients.some(item => !item.handle)) return 'Every client needs a creator name.';
     if (state.content.reviews.some(item => !item.name || !item.quote)) return 'Every review needs a name and quote.';
     if (state.content.home.process.some(item => !item.title || !item.image)) return 'Every approach step needs a title and image.';
+    if (state.content.home.process.some(item => Array.isArray(item.conversation) && (!item.conversation.length || item.conversation.length > 12 || (item.conversationCaption || '').length > 160 || item.conversation.some(message => !message.text.trim() || message.text.length > 1000)))) return 'The Brief conversation needs 1–12 messages, each under 1,000 characters, and a short artwork caption.';
     if (state.content.home.heroImages.length < 3) return 'Choose at least three hero images.';
     return '';
   }
@@ -198,8 +209,19 @@
     const input = event.target;
     if (input.dataset.bind) set(input.dataset.bind, input.value);
     if (input.dataset.field && !['src', 'avatar', 'image'].includes(input.dataset.field)) updateEntry(input.closest('.entry'), input.dataset.field, input.value);
+    if (input.dataset.messageField === 'text') {
+      const entry = input.closest('.entry'), messageIndex = Number(input.closest('.conversation-entry').dataset.messageIndex);
+      state.content.home.process[Number(entry.dataset.index)].conversation[messageIndex].text = input.value; markDirty();
+    }
+    if (input.hasAttribute('data-conversation-caption')) {
+      state.content.home.process[Number(input.closest('.entry').dataset.index)].conversationCaption = input.value; markDirty();
+    }
   });
   document.addEventListener('change', event => {
+    if (event.target.dataset.messageField === 'speaker') {
+      const input = event.target, entry = input.closest('.entry'), messageIndex = Number(input.closest('.conversation-entry').dataset.messageIndex);
+      state.content.home.process[Number(entry.dataset.index)].conversation[messageIndex].speaker = input.value; markDirty();
+    }
     if (event.target.dataset.field && ['src', 'avatar', 'image'].includes(event.target.dataset.field)) updateEntry(event.target.closest('.entry'), event.target.dataset.field, event.target.value);
     if (event.target.dataset.heroIndex != null) {
       const index = Number(event.target.dataset.heroIndex);
@@ -211,6 +233,21 @@
   });
   document.addEventListener('click', async event => {
     const addButton = event.target.closest('[data-add]'); if (addButton) return add(addButton.dataset.add);
+    const messageButton = event.target.closest('[data-message-action]');
+    if (messageButton) {
+      const stepIndex = Number(messageButton.closest('.entry').dataset.index);
+      const messages = state.content.home.process[stepIndex].conversation;
+      const action = messageButton.dataset.messageAction;
+      const index = Number(messageButton.closest('.conversation-entry')?.dataset.messageIndex);
+      if (action === 'add' && messages.length < 12) { messages.push({ speaker: 'Creator', text: '' }); markDirty(); renderConversation(stepIndex, messages.length - 1); }
+      if (action === 'remove' && messages.length > 1) { messages.splice(index, 1); markDirty(); renderConversation(stepIndex, Math.min(index, messages.length - 1)); }
+      if ((action === 'up' && index > 0) || (action === 'down' && index < messages.length - 1)) {
+        const next = index + (action === 'up' ? -1 : 1);
+        [messages[index], messages[next]] = [messages[next], messages[index]];
+        markDirty(); renderConversation(stepIndex, next);
+      }
+      return;
+    }
     const button = event.target.closest('[data-action], [data-upload-path]'); if (!button) return;
     if (button.dataset.uploadPath || button.dataset.action === 'upload') {
       const picker = document.createElement('input'); picker.type = 'file'; picker.accept = 'image/png,image/jpeg,image/webp';
