@@ -71,6 +71,7 @@
         "body": "Tell me about your video, audience, deadline, and references.",
         "image": "assets/thumbnails/freshi4-min.png",
         "alt": "Minecraft scene showing the starting point of a story",
+        "showImage": true,
         "conversationCaption": "Example artwork by Larzy",
         "conversation": [
           {

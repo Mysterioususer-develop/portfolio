@@ -166,12 +166,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     const list = document.querySelector('.process-list'); if (!list || !Array.isArray(steps)) return;
     list.replaceChildren(...steps.map(step => {
       const li = document.createElement('li'), copy = document.createElement('div'), label = document.createElement('span'), title = document.createElement('h3'), body = document.createElement('p'), img = document.createElement('img');
+      const hasConversation = Array.isArray(step.conversation);
+      const showImage = !hasConversation || (step.showImage !== false && !!step.image);
       copy.className = 'process-copy'; label.textContent = step.label || ''; title.textContent = step.title || ''; body.textContent = step.body || '';
-      img.src = assetPath(step.image); img.alt = step.alt || `Minecraft artwork for ${step.title || 'the process'}`; img.width = 1920; img.height = 1080; img.loading = 'lazy';
+      if (showImage) img.src = assetPath(step.image);
+      img.alt = step.alt || `Minecraft artwork for ${step.title || 'the process'}`; img.width = 1920; img.height = 1080; img.loading = 'lazy';
       copy.append(label, title, body);
-      if (Array.isArray(step.conversation)) {
+      if (hasConversation) {
         const demo = document.createElement('div');
-        demo.className = 'brief-demo';
+        demo.className = `brief-demo${showImage ? '' : ' brief-demo-no-image'}`;
         demo.setAttribute('role', 'group');
         demo.setAttribute('aria-label', 'Example project brief conversation');
         demo.innerHTML = '<div class="brief-demo-header"><span>Example conversation</span><span>Brief / 01</span></div>';
@@ -192,7 +195,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           const speaker = document.createElement('span'); speaker.className = 'brief-speaker'; speaker.textContent = line.speaker;
           const text = document.createElement('p'); text.textContent = line.text || '';
           message.append(speaker, text);
-          if (index === step.conversation.length - 1) {
+          if (showImage && index === step.conversation.length - 1) {
             const attachment = document.createElement('figure'); attachment.className = 'brief-attachment';
             if (step.conversationCaption) {
               const caption = document.createElement('figcaption'); caption.textContent = step.conversationCaption;

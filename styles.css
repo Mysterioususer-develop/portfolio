@@ -235,6 +235,7 @@ body:has(dialog[open]){overflow:hidden}
 
 /* Brief step: an illustrative conversation that reveals as the step enters view. */
 .brief-demo{display:flex;flex-direction:column;gap:10px;min-height:440px;width:100%;padding:22px;border:1px solid #8c6b9c;border-radius:16px;background:#2a1d35;box-shadow:0 25px 70px #09051266;overflow:hidden}
+.brief-demo-no-image{min-height:0}
 .brief-demo-header{display:flex;justify-content:space-between;gap:12px;margin-bottom:12px;padding-bottom:13px;border-bottom:1px solid #725580;text-transform:uppercase;letter-spacing:.13em}
 .process-list li .brief-demo-header span{color:#c5abc9;font:700 10px/1.4 var(--body)}
 .process-list li .brief-demo-header span:last-child{color:#f0add5}

@@ -48,6 +48,7 @@ function imageExtension(buffer) {
 function validText(value, limit = 4000) { return typeof value === 'string' && value.length <= limit; }
 function validImage(value) { return validText(value, 500) && (!value || (/^assets\/[\w./% -]+$/i.test(value) && !value.split('/').includes('..')) || /^https:\/\/[^\s]+$/i.test(value)); }
 function validConversation(step) {
+  if (step.showImage !== undefined && typeof step.showImage !== 'boolean') return false;
   if (step.conversation === undefined) return true;
   return Array.isArray(step.conversation) && step.conversation.length >= 1 && step.conversation.length <= 12
     && (step.conversationCaption === undefined || validText(step.conversationCaption, 160))
@@ -60,7 +61,7 @@ function validContent(data) {
   if (!Array.isArray(data.clients) || data.clients.length > 150 || !data.clients.every(x => validText(x.handle, 160) && validText(x.subs, 100) && validImage(x.avatar))) return false;
   if (!Array.isArray(data.reviews) || data.reviews.length > 150 || !data.reviews.every(x => validText(x.name, 160) && validText(x.role, 160) && validText(x.quote, 4000) && validImage(x.avatar))) return false;
   if (!data.home || !Array.isArray(data.home.heroImages) || data.home.heroImages.length > 30 || new Set(data.home.heroImages).size !== data.home.heroImages.length || !data.home.heroImages.every(validImage)) return false;
-  if (!Array.isArray(data.home.process) || data.home.process.length > 12 || !data.home.process.every(x => validText(x.label, 160) && validText(x.title, 160) && validText(x.body) && validText(x.alt, 300) && validImage(x.image) && validConversation(x))) return false;
+  if (!Array.isArray(data.home.process) || data.home.process.length > 12 || !data.home.process.every(x => validText(x.label, 160) && validText(x.title, 160) && validText(x.body) && validText(x.alt, 300) && validImage(x.image) && (x.image || (Array.isArray(x.conversation) && x.showImage === false)) && validConversation(x))) return false;
   if (!data.about || !Array.isArray(data.about.sections)) return false;
   return true;
 }
